@@ -1,7 +1,37 @@
 import React from "react";
+import Router from 'next/router';
 import Image from "next/image";
 
 export default function Login() {
+  const handleSubmit = async (event) => {
+    // Prevent form from refreshing the page.
+    event.preventDefault();
+    
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: event.target.username.value,
+        password: event.target.password.value,
+      }),
+    };
+
+    try {
+      const response = await fetch('/api/login', options);
+
+      // Redirect to dashboard if login is successful.
+      if (response.status === 200) {
+        Router.push('/dashboard');
+      } else {
+        console.log('Login failed.');
+      }
+    } catch (error) {
+      console.error('error: ', error);
+    }
+  }
+
   return (
     <section className="h-full bg-gray-200 md:h-screen mid">
       <div className="container py-12 px-6 h-full m-auto">
@@ -17,13 +47,13 @@ export default function Login() {
                         Let's get you saving!
                       </h4>
                     </div>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                       <p className="mb-4">Please login to your account</p>
                       <div className="mb-4">
                         <input
                           type="text"
                           className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                          id="exampleFormControlInput1"
+                          name="username"
                           placeholder="Username"
                         />
                       </div>
@@ -31,14 +61,14 @@ export default function Login() {
                         <input
                           type="password"
                           className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                          id="exampleFormControlInput1"
+                          name="password"
                           placeholder="Password"
                         />
                       </div>
                       <div className="text-center pt-1 mb-12 pb-1">
                         <button
                           className="inline-block px-6 py-2.5 text-white font-medium text-xs leading-tight uppercase rounded shadow-md bg-cyan-800 hover:bg-red-500 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3"
-                          type="button"
+                          type="submit"
                           data-mdb-ripple="true"
                           data-mdb-ripple-color="light"
                         >
