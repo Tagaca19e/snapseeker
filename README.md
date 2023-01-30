@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Framework
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). Next.js is a JavaScript framework for building server-rendered React applications. It allows developers to easily create and manage the application's structure, routing, and performance.
+
+## CSS Styling
+We are currently using [tailwind](tailwindcss.com) for the project. Tailwind offers great functionality for quick and easy changes for your project. We wanted to focus on the functionality of the project instead of writing a well structured system for the styling. It is currently used by NASA, Microsoft, Google, and Coinbase.
 
 ## Getting Started
 
