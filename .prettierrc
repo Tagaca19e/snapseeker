@@ -1,0 +1,8 @@
+{
+  "singleQuote": true,
+  "trailingComma": false,
+  "plugins": [
+    "prettier-plugin-tailwindcss"
+  ],
+  "pluginSearchDirs": false
+}
