@@ -20,7 +20,7 @@ export default async function validateLogin(req, res) {
 
   // Check for the existence of the user.
   if (result.length === 0) {
-    return res.status(400).json({ message: 'User not found!' });
+    return res.status(400).json({ message: 'Password or email is incorrect.' });
   } else {
     res.status(200).json({ message: 'User found!' });
   }

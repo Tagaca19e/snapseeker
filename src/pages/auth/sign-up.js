@@ -7,12 +7,12 @@ export default function SignUp() {
   const [display, setDisplay] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [statusCode, setStatusCode] = React.useState(0);
-  const [time, setTime] = React.useState(5);
+  const [time, setTime] = React.useState(3);
 
   // Redirect user to login page after 5 seconds.
   useEffect(() => {
     if (time === 0) {
-      Router.push('/login');
+      Router.push('/auth/login');
     }
   });
 
@@ -47,7 +47,7 @@ export default function SignUp() {
     setLoading(true); // Set loading to true to display loading message.
 
     try {
-      fetch('/api/create-user', {
+      fetch('../api/create-user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ export default function SignUp() {
                   className={`mt-2 rounded-md border p-1 text-center ${
                     statusCode === 200
                       ? 'border-cyan-800 text-cyan-800'
-                      : 'border-red-500 text-red-500'
+                      : 'bg-red-100 text-red-500'
                   }`}
                 >
                   {message}
@@ -183,7 +183,7 @@ export default function SignUp() {
               Already have an account?{' '}
               <a
                 className="text-primary-dark hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
-                href="/login"
+                href="/auth/login"
               >
                 Log in.
               </a>

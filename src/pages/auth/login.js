@@ -13,7 +13,7 @@ export default function Login() {
     setMessage(message);
     setTimeout(() => {
       setError(false);
-    }, 2000);
+    }, 4000);
   };
 
   /**
@@ -26,7 +26,7 @@ export default function Login() {
     setLoading(true); // Set loading to true to display loading message.
 
     try {
-      fetch('/api/validate-login', {
+      fetch('../api/validate-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,9 @@ export default function Login() {
               />
             </div>
           </div>
-
+          <div className="mt-4 text-sm font-semibold text-cyan-800">
+            <a href="/auth/forgot">Forgot your password?</a>
+          </div>
           <div className="mt-4">
             <span className="block w-full rounded-md shadow-sm">
               <button
@@ -108,7 +110,7 @@ export default function Login() {
                 {loading ? 'Loading...' : 'Login'}
               </button>
               {error && (
-                <p className="mt-2 rounded-md border border-red-500 p-1 text-center text-red-500">
+                <p className="mt-2 rounded-md border bg-red-100 p-1 text-center text-red-500">
                   {message}
                 </p>
               )}
@@ -120,7 +122,7 @@ export default function Login() {
               Already have an account?{' '}
               <a
                 className="text-primary-dark hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
-                href="/sign-up"
+                href="/auth/sign-up"
               >
                 Sign up.
               </a>
