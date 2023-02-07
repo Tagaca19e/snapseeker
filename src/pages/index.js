@@ -1,8 +1,9 @@
-import Head from 'next/head';
+import Head from 'next/head'
+import Login from '../components/Login'
 
-import { Inter } from '@next/font/google';
+import { Inter } from '@next/font/google'
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   return (
@@ -14,21 +15,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="flex gap-2">
-          <a
-            href="/auth/sign-up"
-            className="hover:bg-primary-dark focus:ring-primary-light focus:border-primary-darkest active:bg-primary-darkest flex justify-center rounded-md border border-transparent bg-cyan-800 py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-4"
-          >
-            Sign up
-          </a>
-          <a
-            href="/auth/login"
-            className="hover:bg-primary-dark focus:ring-primary-light focus:border-primary-darkest active:bg-primary-darkest flex justify-center rounded-md border border-transparent bg-cyan-800 py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-4"
-          >
-            Login
-          </a>
-        </div>
+        <Login />
       </main>
     </>
-  );
+  )
 }
