@@ -16,6 +16,7 @@ export default function Login() {
     }, 4000);
   };
 
+  // TODO(etagaca): Validate sessions for logging in, perssistent sessions.
   /**
    * Validates the user's input and sends a request to MongoDB server to
    * validate user credentials.
@@ -97,9 +98,11 @@ export default function Login() {
               />
             </div>
           </div>
+
           <div className="mt-4 text-sm font-semibold text-cyan-800">
             <a href="/auth/forgot">Forgot your password?</a>
           </div>
+
           <div className="mt-4">
             <span className="block w-full rounded-md shadow-sm">
               <button

@@ -1,0 +1,44 @@
+import clientPromise from '../../../lib/mongodb';
+
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
+export default async function forgotPassword(req, res) {
+  const client = await clientPromise;
+  const db = client.db('snapseeker');
+
+  // Validate the user exists.
+  const result = await db
+    .collection('users')
+    .find({
+      email: { $eq: req.body.email },
+    })
+    .toArray();
+
+  // User exists and can now create a one time link.
+  const secret = process.env.JWT_SECRET;
+  const payload = {
+    email: req.body.email,
+    id: result[0]._id,
+  };
+
+  // Create a token that expires in 10 minutes.
+  const token = jwt.sign(payload, secret, { expiresIn: '1h' });
+  const url = `http://localhost:3000/auth/reset-password/${token}`;
+
+  // Use node mailer to send the email.
+  const transporter = nodemailer.createTransport(
+    { sendmail: true },
+    {
+      from: 'no-reply@snapseeker.com',
+      to: req.body.email,
+      subject: 'Reset your password',
+    }
+  );
+
+  // Send one time link to user.
+  transporter.sendMail({ text: url });
+  res
+    .status(200)
+    .json({ message: `One time link was sent to ${req.body.email}` });
+}
