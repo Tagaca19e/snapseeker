@@ -4,6 +4,10 @@ import { Inter } from '@next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const getData = () => {
+
+}
+
 export default function Home() {
   return (
     <>
@@ -27,6 +31,19 @@ export default function Home() {
           >
             Login
           </a>
+            </div>
+
+          <div className='flex h-screen w-screen items-center justify-center'>
+            <div className='flex flex-col items-center gap-6'>
+              <input
+              type='text'
+              className='rounded-md border-2 border-gray-300 p-2'
+              placeholder='Enter UPC'
+              />
+              <button onClick={getData} type='button' className='rounded-md bg-pink-600 p-4 text-x1 front-bold'>
+                Go
+              </button>
+          </div>
         </div>
       </main>
     </>
