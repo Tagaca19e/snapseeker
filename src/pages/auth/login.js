@@ -27,7 +27,7 @@ export default function Login() {
     setLoading(true); // Set loading to true to display loading message.
 
     try {
-      fetch('../api/validate-login', {
+      fetch('../api/auth/validate-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

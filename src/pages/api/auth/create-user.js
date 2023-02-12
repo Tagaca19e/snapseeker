@@ -1,4 +1,4 @@
-import clientPromise from '../../../lib/mongodb';
+import clientPromise from '../../../../lib/mongodb';
 
 export default async function createUser(req, res) {
   // Validate the request method.

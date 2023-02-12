@@ -3,7 +3,7 @@ import React from 'react';
 export default function forgot() {
   const handleSubmit = async (event) => {
     event.preventDefault();
-    fetch('../api/forgot-password', {
+    fetch('../api/auth/forgot-password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

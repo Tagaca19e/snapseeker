@@ -1,6 +1,6 @@
-import clientPromise from '../../../lib/mongodb';
-
-const jwt = require('jsonwebtoken');
+import clientPromise from '../../../../lib/mongodb';
+import jwt from 'jsonwebtoken';
+import { ObjectId } from 'mongodb';
 
 export default async function resetPassword(req, res) {
   if (req.method !== 'POST') {
@@ -15,16 +15,17 @@ export default async function resetPassword(req, res) {
   }
 
   try {
-    const secret = process.env.JWT_SECRET;
-    const payload = jwt.verify(req.body.token, secret);
-
-    if (payload === 'jwt expired') {
-      // Sending a 401 since token is expired and user is unauthenticated.
-      res.status(401).send('Token expired');
-    }
-
     const client = await clientPromise;
     const db = client.db('snapseeker');
+
+    // Find the user in the database.
+    const user = await db
+      .collection('users')
+      .find({ _id: ObjectId(req.body.id) })
+      .toArray();
+
+    const secret = process.env.JWT_SECRET + user[0].password;
+    const payload = jwt.verify(req.body.token, secret);
     const result = await db
       .collection('users')
       .updateOne(
