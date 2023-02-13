@@ -28,7 +28,7 @@ export default function Home() {
             Login
           </a>
           <a
-            href="/api/searchDatabase"
+            href="/search"
             className="hover:bg-primary-dark focus:ring-primary-light focus:border-primary-darkest active:bg-primary-darkest flex justify-center rounded-md border border-transparent bg-cyan-800 py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-4"
           >
             Search
