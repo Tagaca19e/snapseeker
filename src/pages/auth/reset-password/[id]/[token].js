@@ -32,7 +32,6 @@ export default function token({ expiredToken }) {
       }),
     }).then(async (response) => {
       console.log(await response.text());
-      // TODO(etagaca): Once successful, show a success message.
       if (response.status === 200) {
         setPasswordSuccess(true);
       }

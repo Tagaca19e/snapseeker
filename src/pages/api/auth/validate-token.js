@@ -1,4 +1,4 @@
-import clientPromise from '../../../../lib/mongodb';
+import clientPromise from '/lib/mongodb';
 import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 
@@ -15,7 +15,7 @@ export default async function forgotPassword(req, res) {
   const secret = process.env.JWT_SECRET + user[0].password;
   try {
     jwt.verify(req.body.token, secret);
-    res.status(200).send('Token is valid');
+    res.status(200).send('Token is valid.');
   } catch (error) {
     res.status(401).send(error.message);
   }

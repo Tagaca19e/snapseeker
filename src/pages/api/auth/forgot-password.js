@@ -1,4 +1,4 @@
-import clientPromise from '../../../../lib/mongodb';
+import clientPromise from '/lib/mongodb';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 
@@ -15,6 +15,10 @@ export default async function forgotPassword(req, res) {
     .toArray();
   const user = result[0];
   
+  if (!user) {
+    return res.status(400).json({ message: 'User does not exist.' });
+  }
+
   // Encrypt token for one time use.
   const secret = process.env.JWT_SECRET + user.password;
   const payload = {

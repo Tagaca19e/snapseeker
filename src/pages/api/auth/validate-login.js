@@ -1,4 +1,4 @@
-import clientPromise from '../../../../lib/mongodb';
+import clientPromise from '/lib/mongodb';
 
 export default async function validateLogin(req, res) {
   // Using the mongodb client, connect to the database.
