@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import Router from 'next/router';
+import {v4} from 'uuid'
 
 
 
 export default function Search() {
     const [input,setInput] = useState('')
+    const [properties,setProperties] = useState('')
 
     const handleSearch = async () => {
         const res = await fetch(`http://localhost:3000/api/searchDatabase?term=${input}`);
         const data = await res.json();
 
-        const properties = JSON.parse( JSON.stringify(data));
+        setProperties (JSON.parse(JSON.stringify(data)));
 
-        document.getElementById("_id").innerHTML = properties[0]._id;
-        document.getElementById("name").innerHTML = properties[0].item;
-        document.getElementById("price").innerHTML = properties[0].price;
+
+
+
  //       console.log("data",properties);
  //       console.log("properties",properties);
-   //     console.log("JSON data",data);
+       console.log("JSON data",data);
 
 
     }
@@ -36,11 +38,15 @@ export default function Search() {
                     Go
                 </button>
             </div>
-
-                <h2 id='_id'>_id </h2>
-                <p id='name'>Name </p>
-                <p id='price'>$</p>
-
+            {properties && properties.map((property) => (
+            <div className='flex-auto'>
+                <div className='px-6 py-4'>
+                    <p >_id:{property._id}</p>
+                    <p >item:{property.item}</p>
+                    <p >price:{property.price}</p>
+                </div>
+            </div>
+            ))}
         </div>
     )
 }
