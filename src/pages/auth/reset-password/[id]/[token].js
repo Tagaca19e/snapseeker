@@ -97,7 +97,7 @@ export default function token({ expiredToken }) {
 
             {passwordSuccess && (
               <p className="mt-2 text-sm text-cyan-800">
-                Password success! You may not log in.
+                Password success! You may now log in.
               </p>
             )}
 

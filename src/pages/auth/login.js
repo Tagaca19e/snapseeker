@@ -1,5 +1,6 @@
 import React from 'react';
 import Router from 'next/router';
+import { signIn, getSession } from 'next-auth/react';
 
 export default function Login() {
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
@@ -16,7 +17,6 @@ export default function Login() {
     }, 4000);
   };
 
-  // TODO(etagaca): Validate sessions for logging in, perssistent sessions.
   /**
    * Validates the user's input and sends a request to MongoDB server to
    * validate user credentials.
@@ -26,26 +26,16 @@ export default function Login() {
     setButtonDisabled(true); // Disabled the button to prevent multiple clicks.
     setLoading(true); // Set loading to true to display loading message.
 
-    try {
-      fetch('../api/auth/validate-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: event.target.email.value,
-          password: event.target.password.value,
-        }),
-      }).then(async (response) => {
-        if (response.status === 200) {
-          Router.push('/dashboard');
-        } else {
-          let data = await response.json();
-          displayError(data.message);
-        }
-      });
-    } catch (error) {
-      console.error('error: ', error);
+    const res = await signIn('credentials', {
+      email: event.target.email.value,
+      password: event.target.password.value,
+      redirect: false,
+    });
+
+    if (res.status === 200) {
+      Router.push('/dashboard');
+    } else {
+      displayError(res.error);
     }
 
     // Set loading to false and enable the button.
@@ -135,4 +125,21 @@ export default function Login() {
       </div>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
 }
