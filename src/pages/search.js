@@ -39,11 +39,11 @@ export default function Search() {
                 </button>
             </div>
             {properties && properties.map((property) => (
-            <div className='flex-auto'>
-                <div className='px-6 py-4'>
-                    <p >_id:{property._id}</p>
-                    <p >item:{property.item}</p>
-                    <p >price:{property.price}</p>
+            <div className='flex-auto w-1/4 rounded overflow-hidden shadow-1g m-2'>
+                <div className='font-bold text-x1 mb-2'>
+                    <p >id: {property._id}</p>
+                    <p >item: {property.item}</p> 
+                    <p >price: {property.price}</p>
                 </div>
             </div>
             ))}
