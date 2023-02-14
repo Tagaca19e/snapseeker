@@ -4,6 +4,10 @@ import { Inter } from '@next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const getData = () => {
+
+}
+
 export default function Home() {
   return (
     <>
