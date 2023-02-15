@@ -126,7 +126,8 @@ export default function token({ expiredToken }) {
         </div>
       ) : (
         <p>
-          Link expired. Please request a new password reset link.
+          Link expired. Please request a new password reset link.{' '}
+          <a href="/auth/forgot" className="underline">Forgot password.</a>
         </p>
       )}
     </div>
@@ -149,7 +150,7 @@ export async function getServerSideProps(context) {
       }),
     }
   ).then(async (response) => {
-    return (response.status === 401) ? true : false;
+    return response.status === 401 ? true : false;
   });
 
   return {

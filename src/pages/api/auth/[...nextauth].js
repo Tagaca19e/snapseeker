@@ -9,7 +9,6 @@ export default NextAuth({
       credentials: {},
       authorize: async (credentials) => {
         const { email, password } = credentials;
-
         const client = await clientPromise;
         const db = client.db('snapseeker');
         const result = await db
