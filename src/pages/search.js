@@ -9,15 +9,11 @@ export default function Search() {
     const [input,setInput] = useState('')
     const [properties,setProperties] = useState('')
 
-    getProductById().then((data) => {
-        console.log(data);
-     })
-
     const handleSearch = async () => {
-        const res = await fetch(`http://localhost:3000/api/searchDatabase?term=${input}`);
+        const res = await fetch(`http://localhost:3000/api/walmart?term=${input}`);
         const data = await res.json();
 
-        setProperties (JSON.parse(JSON.stringify(data)));
+      //  setProperties (JSON.parse(JSON.stringify(data)));
 
 
 
@@ -44,7 +40,7 @@ export default function Search() {
                     Go
                 </button>
             </div>
-            {properties && properties.map((property) => (
+            {/* {properties && properties.map((property) => (
             <div className='flex-auto w-1/4 rounded overflow-hidden shadow-1g m-2'>
                 <div className='font-bold text-x1 mb-2'>
                     <p >id: {property._id}</p>
@@ -52,7 +48,7 @@ export default function Search() {
                     <p >price: {property.price}</p>
                 </div>
             </div>
-            ))}
+            ))} */}
         </div>
     )
 }

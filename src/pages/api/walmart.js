@@ -56,21 +56,20 @@ const generateWalmartHeaders = () => {
 };
 
 
-const getProductById = async () => {
+ export default async function getProductById(req,res) {
   const options = {
     method: "GET",
     headers: generateWalmartHeaders(),
   };
 
-  const res = await fetch(
-    `https://developer.api.walmart.com/api-proxy/service/affil/product/v2/items?upc=035000521019`,
+  const data = await fetch(
+    `https://developer.api.walmart.com/api-proxy/service/affil/product/v2/items?upc=${req.query.term}`,
     options
-  );
-  
-  return await res.json()
+  )
+
+  res.json(data);
 };
 
 
 
-export default getProductById;
 
