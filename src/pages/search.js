@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import getProductById from './api/walmart';
 //import Router from 'next/router';
 
 
@@ -8,11 +9,16 @@ export default function Search() {
     const [input,setInput] = useState('')
     const [properties,setProperties] = useState('')
 
+    getProductById().then((data) => {
+        console.log(data);
+     })
+
     const handleSearch = async () => {
         const res = await fetch(`http://localhost:3000/api/searchDatabase?term=${input}`);
         const data = await res.json();
 
         setProperties (JSON.parse(JSON.stringify(data)));
+
 
 
 
