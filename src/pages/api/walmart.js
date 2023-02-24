@@ -59,9 +59,6 @@ const generateWalmartHeaders = () => {
  export default async function getProductById(req,res) {
   const options = {
     method: "GET",
-    mode: 'cors',
-    cache: 'no-cache',
-    credentials: 'same-origin',
     headers: generateWalmartHeaders(),
 
   };
@@ -69,9 +66,10 @@ const generateWalmartHeaders = () => {
   const data = await fetch(
     `https://developer.api.walmart.com/api-proxy/service/affil/product/v2/items?upc=${req.query.term}`,
     options
-  )
+  ).then(data => data.json()).catch(error => console.error(error));
 
   res.json(data);
+ // console.log(data);
 };
 
 

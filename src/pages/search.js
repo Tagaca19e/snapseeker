@@ -10,7 +10,7 @@ export default function Search() {
     const [properties,setProperties] = useState('')
 
     const handleSearch = async () => {
-        const res = await fetch(`http://localhost:3000/api/walmart?term=${input}`);
+        const res = await fetch(`http://localhost:3000/api/walmart?term=${input}`)
         const data = await res.json();
 
       //  setProperties (JSON.parse(JSON.stringify(data)));
