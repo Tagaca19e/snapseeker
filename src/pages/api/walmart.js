@@ -59,7 +59,11 @@ const generateWalmartHeaders = () => {
  export default async function getProductById(req,res) {
   const options = {
     method: "GET",
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
     headers: generateWalmartHeaders(),
+
   };
 
   const data = await fetch(
