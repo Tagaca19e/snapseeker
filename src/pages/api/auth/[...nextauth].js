@@ -1,5 +1,5 @@
-import NextAuth from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import clientPromise from '/lib/mongodb';
 
 export default NextAuth({
@@ -14,21 +14,21 @@ export default NextAuth({
         const result = await db
           .collection('users')
           .find({
-            $and: [
-              { email: { $eq: email } },
-              { password: { $eq: password } },
-            ],
+            $and: [{ email: { $eq: email } }, { password: { $eq: password } }],
           })
           .toArray();
 
         if (result.length === 0) {
           throw new Error('Invalid email or password');
         }
-        return { email: email  }
-      }
+        return {
+          name: result[0].first_name,
+          email: result[0].email,
+        };
+      },
     }),
   ],
   pages: {
     signIn: '/auth/login',
-  }
-})
+  },
+});

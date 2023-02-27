@@ -63,7 +63,7 @@ export default function token({ expiredToken }) {
                   placeholder="Enter Password"
                   type="password"
                   name="password"
-                  className="form-input focus:ring-primary-lightest focus:border-primary-base mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-4 disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                   required
                 />
               </div>
@@ -82,21 +82,22 @@ export default function token({ expiredToken }) {
                   placeholder="Enter Password"
                   type="password"
                   name="confirm_password"
-                  className="form-input focus:ring-primary-lightest focus:border-primary-base mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-4 disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                   required
                 />
               </div>
             </div>
 
             {passwordError && !passwordSuccess && (
-              <p className="mt-2 text-sm text-red-500">
-                Passwords do not match
-              </p>
+              <p className="mt-2 text-sm text-error">Passwords do not match</p>
             )}
 
             {passwordSuccess && (
-              <p className="mt-2 text-sm text-cyan-800">
-                Password success! You may now log in.
+              <p className="mt-2 text-sm text-dark">
+                Password success! You may now{' '}
+                <a href="/auth/login" className="underline">
+                  log in.
+                </a>
               </p>
             )}
 
@@ -104,7 +105,7 @@ export default function token({ expiredToken }) {
               <span className="block w-full rounded-md shadow-sm">
                 <button
                   type="submit"
-                  className="hover:bg-primary-dark focus:ring-primary-light focus:border-primary-darkest active:bg-primary-darkest flex w-full justify-center rounded-md border border-transparent bg-cyan-800 py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-4"
+                  className="flex w-full justify-center rounded-md border border-transparent bg-dark py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-2"
                 >
                   Reset Password
                 </button>
@@ -127,7 +128,9 @@ export default function token({ expiredToken }) {
       ) : (
         <p>
           Link expired. Please request a new password reset link.{' '}
-          <a href="/auth/forgot" className="underline">Forgot password.</a>
+          <a href="/auth/forgot" className="underline">
+            Forgot password.
+          </a>
         </p>
       )}
     </div>

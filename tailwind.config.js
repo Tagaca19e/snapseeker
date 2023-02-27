@@ -2,7 +2,15 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#75e6da',
+        secondary: '#189ab4',
+        dark: '#5271ff',
+        error_light: '#f5eaea',
+        error: '#b61919',
+      },
+    },
   },
   plugins: [
     require('@tailwindcss/aspect-ratio'),
