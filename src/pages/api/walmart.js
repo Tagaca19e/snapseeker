@@ -68,6 +68,8 @@ const generateWalmartHeaders = () => {
     options
   ).then(data => data.json()).catch(error => console.error(error));
 
+
+
   res.json(data);
 };
 

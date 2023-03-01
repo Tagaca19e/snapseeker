@@ -1,8 +1,4 @@
 import React, { useState } from 'react';
-import getProductById from './api/walmart';
-//import Router from 'next/router';
-
-
 
 
 export default function Search() {
@@ -10,20 +6,16 @@ export default function Search() {
     const [properties,setProperties] = useState('')
 
     const handleSearch = async () => {
+
+        
+
+
         const res = await fetch(`http://localhost:3000/api/walmart?term=${input}`)
         const data = await res.json();
 
-//      setProperties ()
-//        JSON.parse(JSON.stringify(data));
+        setProperties (data.items)
 
-
-
-
-
- //       console.log("data",properties);
- //       console.log("properties",properties);
-        console.log("JSON data",data);
-
+        console.log("items",data.items)
 
     }
     return (
@@ -41,15 +33,20 @@ export default function Search() {
                     Go
                 </button>
             </div>
-            {/* {properties && properties.map((property) => (
+            {properties && properties.map((property) => (
             <div className='flex-auto w-1/4 rounded overflow-hidden shadow-1g m-2'>
-                <div className='font-bold text-x1 mb-2'>
-                    <p >id: {property._id}</p>
-                    <p >item: {property.item}</p> 
-                    <p >price: {property.price}</p>
-                </div>
+                    <ul>
+                    <li key ={property.itemId}>
+                    <p>name: {property.name}</p>
+                    <p>price $: {property.salePrice}</p> 
+                    <p>offertype: {property.offerType}</p>
+                    <p>UPC: {property.upc}</p>
+                    <p>stock: {property.stock}</p>
+                    <img src = {property.thumbnailImage} alt = {property.name}/>
+                    </li>
+                    </ul>
             </div>
-            ))} */}
+            ))}
         </div>
     )
 }
