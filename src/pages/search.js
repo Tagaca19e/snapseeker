@@ -13,7 +13,8 @@ export default function Search() {
         const res = await fetch(`http://localhost:3000/api/walmart?term=${input}`)
         const data = await res.json();
 
-//      setProperties (JSON.parse(JSON.stringify(data)));
+//      setProperties ()
+//        JSON.parse(JSON.stringify(data));
 
 
 
