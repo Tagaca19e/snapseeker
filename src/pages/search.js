@@ -7,15 +7,18 @@ export default function Search() {
 
     const handleSearch = async () => {
 
-        
+        event.preventDefault();
 
+        if(!input.trim()) {
+            alert('Please enter a value.');
+            return;
+        }
 
         const res = await fetch(`http://localhost:3000/api/walmart?term=${input}`)
         const data = await res.json();
 
         setProperties (data.items)
 
-        console.log("items",data.items)
 
     }
     return (
@@ -24,7 +27,7 @@ export default function Search() {
                 <input
                   type='text'
                   value={input}
-                  onChange = {(e) => setInput(e.target.value)}
+                  onChange = {(event) => setInput(event.target.value)}
                   className='rounded-md border-2 border-gray-300 p-2'
                   placeholder='Enter item'
                   required
