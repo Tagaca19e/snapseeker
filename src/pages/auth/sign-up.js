@@ -47,7 +47,7 @@ export default function SignUp() {
     setLoading(true); // Set loading to true to display loading message.
 
     try {
-      fetch('../api/create-user', {
+      fetch('../api/auth/create-user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
