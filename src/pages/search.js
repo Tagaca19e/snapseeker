@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 
-
 export default function Search() {
   const [input, setInput] = useState('')
   const [properties, setProperties] = useState('')
