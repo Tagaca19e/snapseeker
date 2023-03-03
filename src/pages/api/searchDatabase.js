@@ -6,21 +6,19 @@ export default async function searchData(req, res) {
   // Choose which database you want to use.
   const db = client.db('snapseeker');
 
-  //console.log("term =",req.query.term)
-
   const data = await db.collection('sample_data').aggregate([
-        {
-            $search: {
-                search: {
-                  query: req.query.term ,
-                  path: ["item"]
-                }
-            }
-        }, 
-        {
-          $limit: 20
+    {
+      $search: {
+        search: {
+          query: req.query.term,
+          path: ["item"]
         }
-    ]).toArray()
+      }
+    },
+    {
+      $limit: 20
+    }
+  ]).toArray()
 
- res.json(data);
+  res.json(data);
 }

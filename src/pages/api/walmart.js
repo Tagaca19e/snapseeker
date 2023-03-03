@@ -2,8 +2,8 @@
 import NodeRSA from "node-rsa";
 
 const keyData = {
-    consumerId: "1868a99f-ff67-4181-ad39-a92a773d586e",
-    privateKey: `-----BEGIN RSA PRIVATE KEY-----
+  consumerId: "1868a99f-ff67-4181-ad39-a92a773d586e",
+  privateKey: `-----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEAxlsoj5Fg1oy1SDv+KdOIznXKj3QT+5+KzhgmksMQdZ/E1kJG
 vodo+cO+7chyDmo9apZX3YeI39oCavyNClnS+wymHtrCJUAQF6lTbCkKN53CmRdp
 4aOx9300n6uLLP7x/uBtsvmWJMMdUKgsS1ObGKKrt0KijaFACoTsllT/3V2Z91zV
@@ -32,8 +32,8 @@ XOgqBItbVISS5B7W9kFBzVKR3avCDeYj9MoVzX85zpvd6JAMaOs=
 -----END RSA PRIVATE KEY-----`,
   keyVer: 5
 };
-    
-    
+
+
 const generateWalmartHeaders = () => {
   const { privateKey, consumerId, keyVer } = keyData;
   const hashList = {
@@ -55,24 +55,22 @@ const generateWalmartHeaders = () => {
   };
 };
 
-
- export default async function getProductById(req,res) {
+export default async function getProductById(req, res) {
   const options = {
     method: "GET",
     headers: generateWalmartHeaders(),
 
   };
 
-  const data = await fetch(
-    `https://developer.api.walmart.com/api-proxy/service/affil/product/v2/items?upc=${req.query.term}`,
-    options
-  ).then(data => data.json()).catch(error => console.error(error));
+  try {
+    const data = await fetch(
+      `https://developer.api.walmart.com/api-proxy/service/affil/product/v2/items?upc=${req.query.term}`,
+      options
+    ).then(data => data.json()).catch(error => console.error(error));
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+  }
 
-
-
-  res.json(data);
 };
-
-
-
 
