@@ -27,7 +27,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Dashboard({ session }) {
+export default function Dashboard({ session, products }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -222,7 +222,7 @@ export default function Dashboard({ session }) {
                 <SearchInput />
               </div>
               <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-                <ProductList />
+                <ProductList products={products} />
               </div>
             </div>
           </main>
@@ -234,6 +234,8 @@ export default function Dashboard({ session }) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  const res = await fetch(`${process.env.DOMAIN}/api/get-products`);
+  const data = await res.json();
 
   if (!session) {
     return {
@@ -247,6 +249,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       session,
+      products: data,
     },
   };
 }
