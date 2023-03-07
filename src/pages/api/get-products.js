@@ -3,6 +3,7 @@ import SerpApi from 'google-search-results-nodejs';
 export default async function getResults(req, res) {
   const search = new SerpApi.GoogleSearch(process.env.SERP_API_KEY);
 
+
   try {
     const result = search.json(
       {
@@ -10,7 +11,7 @@ export default async function getResults(req, res) {
         // Refer to https://serpapi.com/google-shopping-api.
         engine: 'google_shopping',
         google_domain: 'google.com',
-        q: 'Coffee',
+        q: req.query.q,
         location: 'United States',
       },
       (data) => {
