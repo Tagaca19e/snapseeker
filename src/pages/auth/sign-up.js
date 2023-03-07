@@ -29,7 +29,7 @@ export default function SignUp() {
     if (statusCode !== 200) {
       setTimeout(() => {
         setDisplay(false);
-      }, 3000);
+      }, 5000);
     } else {
       setInterval(() => {
         setTime((prev) => prev - 1);
@@ -90,7 +90,7 @@ export default function SignUp() {
                   placeholder="First Name"
                   type="text"
                   name="first_name"
-                  className="form-input focus:ring-primary-lightest focus:border-primary-base mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-4 disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                   required
                 />
               </div>
@@ -109,7 +109,7 @@ export default function SignUp() {
                   placeholder="Last Name"
                   type="text"
                   name="last_name"
-                  className="form-input focus:ring-primary-lightest focus:border-primary-base mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-4 disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                   required
                 />
               </div>
@@ -129,7 +129,7 @@ export default function SignUp() {
                 placeholder="Email Address"
                 type="email"
                 name="email"
-                className="form-input focus:ring-primary-lightest focus:border-primary-base mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-4 disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                 required
               />
             </div>
@@ -148,7 +148,7 @@ export default function SignUp() {
                 placeholder="Password"
                 type="password"
                 name="password"
-                className="form-input focus:ring-primary-lightest focus:border-primary-base mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-4 disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                 required
               />
             </div>
@@ -158,7 +158,7 @@ export default function SignUp() {
             <span className="block w-full rounded-md shadow-sm">
               <button
                 type="submit"
-                className="hover:bg-primary-dark focus:ring-primary-light focus:border-primary-darkest active:bg-primary-darkest flex w-full justify-center rounded-md border border-transparent bg-cyan-800 py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-4"
+                className="flex w-full justify-center rounded-md border border-transparent bg-dark py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-2"
                 disabled={buttonDisabled}
               >
                 {loading ? 'Loading...' : 'Register'}
@@ -167,8 +167,8 @@ export default function SignUp() {
                 <p
                   className={`mt-2 rounded-md border p-1 text-center ${
                     statusCode === 200
-                      ? 'border-cyan-800 text-cyan-800'
-                      : 'bg-red-100 text-red-500'
+                      ? 'border-dark text-dark'
+                      : 'bg-error_light text-error'
                   }`}
                 >
                   {message}
