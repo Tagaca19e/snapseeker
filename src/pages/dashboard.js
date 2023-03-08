@@ -12,6 +12,7 @@ import {
 import { getSession, signOut } from 'next-auth/react';
 import ProductList from '@/components/ProductList';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 // TODO(etagaca): Enable dashboard switching between different dashboards.
 const navigation = [
@@ -29,10 +30,12 @@ function classNames(...classes) {
 export default function Dashboard({ session, products }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
 
   const handleInputChange = (event) => {
     setSearchQuery(event.target.value);
   };
+
 
   console.log(searchQuery);
 
@@ -236,6 +239,7 @@ export default function Dashboard({ session, products }) {
                       name="search"
                       className="sm:text-md block w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-dark"
                     />
+                    <button type="button" onClick={() => router.push(`/dashboard?q=${searchQuery}`)}>Search</button>
                   </div>
                 </div>
               </div>
