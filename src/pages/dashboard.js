@@ -11,8 +11,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { getSession, signOut } from 'next-auth/react';
 import ProductList from '@/components/ProductList';
-import SearchInput from '@/components/SearchInput';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 // TODO(etagaca): Enable dashboard switching between different dashboards.
 const navigation = [
@@ -28,7 +28,21 @@ function classNames(...classes) {
 }
 
 export default function Dashboard({ session, products }) {
+  const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
+
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    router.push(`/dashboard?q=${searchQuery}`)
+  }
+
+
+
 
   return (
     <>
@@ -219,7 +233,22 @@ export default function Dashboard({ session, products }) {
                 <h1 className="mb-4 text-3xl font-semibold text-gray-900">
                   Hello {session.user.name}
                 </h1>
-                <SearchInput />
+                <div>
+                  <div className="mt-1">
+                    <form onSubmit={handleSubmit}>
+                    <input
+                      autoComplete="off"
+                      placeholder="Search your products"
+                      type="text"
+                      value={searchQuery}
+                      onChange={handleInputChange}
+                      name="search"
+                      className="sm:text-md block w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-dark"
+                    />
+                    <button type="button" onClick={() => router.push(`/dashboard?q=${searchQuery}`)}>Search</button>
+                    </form>
+                  </div>
+                </div>
               </div>
               <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
                 <ProductList products={products} />
@@ -234,7 +263,8 @@ export default function Dashboard({ session, products }) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  const res = await fetch(`${process.env.DOMAIN}/api/get-products`);
+  const sInput = context.query.q;
+  const res = await fetch(`${process.env.DOMAIN}/api/get-products?q=${sInput}`);
   const data = await res.json();
 
   if (!session) {
