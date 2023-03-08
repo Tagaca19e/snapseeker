@@ -36,8 +36,14 @@ export default function Dashboard({ session, products }) {
     setSearchQuery(event.target.value);
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Search Input",searchQuery);
+    router.push(`/dashboard?q=${searchQuery}`)
+  }
 
-  console.log(searchQuery);
+
+
 
   return (
     <>
@@ -230,6 +236,7 @@ export default function Dashboard({ session, products }) {
                 </h1>
                 <div>
                   <div className="mt-1">
+                    <form onSubmit={handleSubmit}>
                     <input
                       autoComplete="off"
                       placeholder="Search your products"
@@ -240,6 +247,7 @@ export default function Dashboard({ session, products }) {
                       className="sm:text-md block w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-dark"
                     />
                     <button type="button" onClick={() => router.push(`/dashboard?q=${searchQuery}`)}>Search</button>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -257,7 +265,6 @@ export default function Dashboard({ session, products }) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   const sInput = context.query.q;
-
   const res = await fetch(`${process.env.DOMAIN}/api/get-products?q=${sInput}`);
   const data = await res.json();
 
