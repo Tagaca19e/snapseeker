@@ -38,7 +38,6 @@ export default function Dashboard({ session, products }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Search Input",searchQuery);
     router.push(`/dashboard?q=${searchQuery}`)
   }
 
