@@ -1,6 +1,5 @@
 import React from 'react';
 import Webcam from 'react-webcam';
-import AWS from 'aws-sdk';
 
 export default function Camera() {
   // TODO(etagaca): Add a button for mobile camera.
