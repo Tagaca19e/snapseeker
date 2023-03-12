@@ -12,7 +12,6 @@ import {
 import { getSession, signOut } from 'next-auth/react';
 import ProductList from '@/components/ProductList';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 
 // TODO(etagaca): Enable dashboard switching between different dashboards.
 const navigation = [
@@ -28,21 +27,25 @@ function classNames(...classes) {
 }
 
 export default function Dashboard({ session, products }) {
-  const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const router = useRouter();
+  const [searchResults, setSearchResults] = useState(products);
 
-  const handleInputChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
+  // TODO(etagaca): Set loading effect. Sometimes CSR is slow.
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    router.push(`/dashboard?q=${searchQuery}`)
-  }
+    const res = await fetch('/api/get-products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: event.target.search.value,
+      }),
+    });
 
-
-
+    const data = await res.json();
+    setSearchResults(data);
+  };
 
   return (
     <>
@@ -229,29 +232,26 @@ export default function Dashboard({ session, products }) {
           </div>
           <main className="flex-1">
             <div className="py-6">
-              <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
-                <h1 className="mb-4 text-3xl font-semibold text-gray-900">
-                  Hello {session.user.name}
-                </h1>
+              <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-2">
                 <div>
-                  <div className="mt-1">
-                    <form onSubmit={handleSubmit}>
-                    <input
-                      autoComplete="off"
-                      placeholder="Search your products"
-                      type="text"
-                      value={searchQuery}
-                      onChange={handleInputChange}
-                      name="search"
-                      className="sm:text-md block w-full rounded-md border-gray-300 shadow-sm focus:border-dark focus:ring-dark"
-                    />
-                    <button type="button" onClick={() => router.push(`/dashboard?q=${searchQuery}`)}>Search</button>
-                    </form>
+                  <div>
+                    <div className="mt-1">
+                      <form onSubmit={handleSubmit}>
+                        <input
+                          autocomplete="off"
+                          placeholder="Search your products"
+                          type="text"
+                          name="search"
+                          className="block w-full rounded-full border-0 px-4 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-dark sm:text-sm sm:leading-6"
+                        />
+                      </form>
+                      <button>Upload image</button>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-                <ProductList products={products} />
+              <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-2">
+                <ProductList products={searchResults} />
               </div>
             </div>
           </main>
@@ -263,8 +263,16 @@ export default function Dashboard({ session, products }) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  const sInput = context.query.q;
-  const res = await fetch(`${process.env.DOMAIN}/api/get-products?q=${sInput}`);
+  // TODO(etagaca): Call initial results.
+  const res = await fetch(`${process.env.DOMAIN}/api/get-products`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: 'coffee',
+    }),
+  });
   const data = await res.json();
 
   if (!session) {
