@@ -7,7 +7,6 @@ export default async function getResults(req, res) {
   }
 
   const search = new SerpApi.GoogleSearch(process.env.SERP_API_KEY);
-
   try {
     search.json(
       {
@@ -17,6 +16,7 @@ export default async function getResults(req, res) {
         location: 'United States',
       },
       (data) => {
+        /* @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201 */
         res.status(201).json({ data });
       }
     );

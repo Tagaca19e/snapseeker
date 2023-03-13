@@ -2,6 +2,7 @@ import { useEffect, useContext, useState } from 'react';
 import { AppContext } from './AppContextProvider';
 
 export default function ProductList({ products }) {
+  // Set initial state to the products from server-side rendering.
   const [productList, setProductList] = useState(
     products.data.shopping_results
   );

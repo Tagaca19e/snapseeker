@@ -2,14 +2,13 @@ import { React, useContext } from 'react';
 import Layout from '../components/Layout';
 import ProductList from '@/components/ProductList';
 import { getSession } from 'next-auth/react';
-import { AppContext } from '../components/AppContextProvider';
+import CameraUpload from '../components/CameraUpload';
 
 export default function dashboard2({ session, products }) {
-  const { setSearchResults } = useContext(AppContext);
-
   return (
     <div>
       <Layout>
+        <CameraUpload />
         <ProductList products={products} />
       </Layout>
     </div>
@@ -18,7 +17,7 @@ export default function dashboard2({ session, products }) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  // TODO(etagaca): Call initial results.
+  // TODO(etagaca): Call better initialization results.
   const res = await fetch(`${process.env.DOMAIN}/api/get-products`, {
     method: 'POST',
     headers: {

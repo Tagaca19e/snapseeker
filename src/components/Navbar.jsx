@@ -1,11 +1,10 @@
-import { Fragment, useContext, useState, useRef } from 'react';
+import { Fragment, useContext, useState, useRef, useCallback } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CameraIcon } from '@heroicons/react/20/solid';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { signOut } from 'next-auth/react';
 import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
-import Webcam from 'react-webcam';
 
 const navigation = [
   { name: 'Home', href: '#', current: true },
@@ -23,12 +22,12 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const { setSearchResults } = useContext(AppContext);
+  const { setSearchResults, setOpenCamera } = useContext(AppContext);
 
   // TODO(etagaca): Implement real user image.
   const user = {
     ...useSession().data?.user,
-    imageUrl: '/logos/logo.svg',
+    imageUrl: '/user.svg',
   };
 
   const handleSubmit = async (event) => {
@@ -56,7 +55,7 @@ export default function Navbar() {
               <div className="relative z-10 flex px-2 lg:px-0">
                 <div className="flex flex-shrink-0 items-center">
                   <img
-                    className="block h-8 w-auto"
+                    className="block h-12 w-auto"
                     src="/logos/logo.svg"
                     alt="Your Company"
                   />
@@ -76,9 +75,9 @@ export default function Navbar() {
                     </div>
                     <form onSubmit={handleSubmit}>
                       <input
-                        id="search"
+                        autoComplete="off"
                         name="search"
-                        className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                         placeholder="Search"
                         type="search"
                       />
@@ -87,6 +86,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    onClick={() => setOpenCamera(true)}
                   >
                     <CameraIcon
                       className="-ml-0.5 h-5 w-5 text-gray-400"
@@ -97,7 +97,7 @@ export default function Navbar() {
               </div>
               <div className="relative z-10 flex items-center lg:hidden">
                 {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
                   <span className="sr-only">Open menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -109,7 +109,7 @@ export default function Navbar() {
               <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
                 <button
                   type="button"
-                  className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                   <span className="sr-only">View notifications</span>
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
@@ -118,7 +118,7 @@ export default function Navbar() {
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-4 flex-shrink-0">
                   <div>
-                    <Menu.Button className="flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <Menu.Button className="flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
@@ -218,7 +218,7 @@ export default function Navbar() {
                 </div>
                 <button
                   type="button"
-                  className="ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                   <span className="sr-only">View notifications</span>
                   <BellIcon className="h-6 w-6" aria-hidden="true" />

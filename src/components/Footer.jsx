@@ -1,7 +1,7 @@
 const navigation = [
   {
     name: 'GitHub',
-    href: '#',
+    href: 'https://github.com/Tagaca19e/snapseeker',
     icon: (props) => (
       <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
         <path
@@ -32,7 +32,8 @@ export default function Footer() {
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
           <p className="text-center text-xs leading-5 text-gray-500">
-            &copy; 2023 Snapseeker, Inc. All rights reserved.
+            &copy; {new Date().getFullYear()} Snapseeker, Inc. All rights
+            reserved.
           </p>
         </div>
       </div>
