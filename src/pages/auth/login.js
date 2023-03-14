@@ -54,7 +54,7 @@ export default function Login() {
           <div className="mt-6">
             <div className="block ">
               <label
-                for="email"
+                htmlFor="email"
                 className="block items-center text-sm font-medium leading-5 text-gray-700"
               >
                 Email Address
@@ -73,7 +73,7 @@ export default function Login() {
           <div className="mt-6">
             <div className="block ">
               <label
-                for="password"
+                htmlFor="password"
                 className=" block items-center text-sm font-medium leading-5 text-gray-700"
               >
                 Password
