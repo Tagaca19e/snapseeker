@@ -1,27 +1,30 @@
 import clientPromise from '/lib/mongodb';
+import bcrypt from 'bcrypt';
 
 export default async function validateLogin(req, res) {
+    const { email, password } = req.body;
   // Using the mongodb client, connect to the database.
-  const client = await clientPromise;
+    try {
+    const client = await clientPromise;
 
   // Choose which database you want to use.
   const db = client.db('snapseeker');
-
+        const user = await db.collection('users').findOne({ email: email });
   // Find the user in the database.
-  const result = await db
-    .collection('users')
-    .find({
-      $and: [
-        { email: { $eq: req.body.email } },
-        { password: { $eq: req.body.password } },
-      ],
-    })
-    .toArray();
+        if (!user) {
+            return res.status(400).json({ message: 'Email or password is incorrect.' });
+        }
+        
+
+    const Match = await bcrypt.compare(password, user.password);
 
   // Check for the existence of the user.
-  if (result.length === 0) {
-    return res.status(400).json({ message: 'Password or email is incorrect.' });
-  } else {
-    res.status(200).json({ message: 'User found!' });
-  }
+        if (match) {
+            res.status(200).json({ message: 'Login successful!' });
+        } else {
+            res.status(400).json({ message: 'Email or password is incorrect.' });
+        }
+        } catch (error) {
+            res.status(200).json({ message: 'User found!' });
+        }
 }
