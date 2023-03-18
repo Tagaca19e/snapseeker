@@ -2,18 +2,6 @@ import clientPromise from '/lib/mongodb';
 import bcrypt from 'bcrypt';
 import passwordValidation from 'lib/passwordValidation';
 
-const hashPassword = async (password) => {
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-    return hash;
-  } catch (err) {
-    console.error(err.message);
-  }
-};
-
-
-
 export default async function createUser(req, res) {
   const { email, password, first_name, last_name } = req.body;
   const saltRounds = 10;
@@ -24,14 +12,11 @@ export default async function createUser(req, res) {
     const db = client.db('snapseeker');
 
     if (!passwordValidation(password)) {
-      return res
-        .status(400)
-        .json({
-          message:
-            'Password must be 8 Characters or longer and contain at least one lowercase letter, one uppercase letter, one number, and one special characters',
-        });
+      return res.status(400).json({
+        message:
+          'Password must be 8 Characters or longer and contain at least one lowercase letter, one uppercase letter, one number, and one special characters',
+      });
     }
-
 
     // Check if email already exists.
     const users = await db
@@ -48,12 +33,10 @@ export default async function createUser(req, res) {
     }
     // Validate the request method.
 
-
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-
     // Create user.
-    const result = await db.collection('users').insertOne({
+    await db.collection('users').insertOne({
       name: `${first_name} ${last_name}`,
       email: email,
       password: hashedPassword,
@@ -61,7 +44,7 @@ export default async function createUser(req, res) {
 
     res.status(201).json({ message: 'User created! You may now login.' });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: 'User not created! Please try again.' });
   }
 }

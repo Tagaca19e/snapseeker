@@ -80,7 +80,7 @@ export default function SignUp() {
             <div className="col-span-1">
               <div className="block ">
                 <label
-                  htmlFor="first_name"
+                  for="first_name"
                   className="block items-center text-sm font-medium leading-5 text-gray-700"
                 >
                   First Name
@@ -99,7 +99,7 @@ export default function SignUp() {
             <div className="col-span-1">
               <div className="block">
                 <label
-                  htmlFor="last_name"
+                  for="last_name"
                   className=" block items-center text-sm font-medium leading-5 text-gray-700"
                 >
                   Last Name
@@ -119,7 +119,7 @@ export default function SignUp() {
           <div className="mt-6">
             <div className="block ">
               <label
-                htmlFor="email"
+                for="email"
                 className="block items-center text-sm font-medium leading-5 text-gray-700"
               >
                 Email Address
@@ -138,7 +138,7 @@ export default function SignUp() {
           <div className="mt-6">
             <div className="block ">
               <label
-                htmlFor="password"
+                for="password"
                 className=" block items-center text-sm font-medium leading-5 text-gray-700"
               >
                 Password

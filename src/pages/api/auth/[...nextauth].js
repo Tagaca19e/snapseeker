@@ -4,7 +4,6 @@ import clientPromise from '/lib/mongodb';
 import bcrypt from 'bcrypt';
 import passwordValidation from 'lib/passwordValidation';
 
-
 export default NextAuth({
   providers: [
     CredentialsProvider({
@@ -14,9 +13,7 @@ export default NextAuth({
         const { email, password } = credentials;
 
         if (!passwordValidation(password)) {
-           throw new Error(
-             'Invalid email or password'
-           ); 
+          throw new Error('Invalid email or password');
         }
         const client = await clientPromise;
         const db = client.db('snapseeker');
@@ -33,7 +30,6 @@ export default NextAuth({
             };
           }
         }
-
       },
     }),
   ],
