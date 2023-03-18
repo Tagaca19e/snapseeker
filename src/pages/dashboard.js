@@ -1,14 +1,16 @@
-import { React, useContext } from 'react';
+import { React } from 'react';
 import Layout from '../components/Layout';
 import ProductList from '@/components/ProductList';
 import { getSession } from 'next-auth/react';
 import CameraUpload from '../components/CameraUpload';
+import { userAgent } from 'next/server';
 
-export default function dashboard2({ session, products }) {
+export default function dashboard2({ products, isMobileView }) {
+
   return (
     <div>
       <Layout>
-        <CameraUpload />
+        <CameraUpload isMobileView={isMobileView} />
         <ProductList products={products} />
       </Layout>
     </div>
@@ -38,10 +40,16 @@ export async function getServerSideProps(context) {
     };
   }
 
+  const userAgent = context.req.headers['user-agent'];
+  const isMobileView = userAgent.match(
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+    ) ? true : false;
+
   return {
     props: {
       session,
       products: data,
+      isMobileView,
     },
   };
 }

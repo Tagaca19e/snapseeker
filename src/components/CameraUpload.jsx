@@ -1,11 +1,15 @@
-import { Fragment, useRef, useState, useCallback } from 'react';
+import { Fragment, useRef, useState, useCallback, useContext } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { AppContext } from './AppContextProvider';
-import { useContext } from 'react';
 import { uploadFile } from '../hooks/uploadFile';
 import Webcam from 'react-webcam';
 
-export default function CameraUpload() {
+// Use front facing camera on mobile devices.
+const mobileConstraints = {
+  facingMode: { exact: 'environment' },
+}
+
+export default function CameraUpload({ isMobileView }) {
   const { setSearchResults, openCamera, setOpenCamera } =
     useContext(AppContext);
 
@@ -84,6 +88,7 @@ export default function CameraUpload() {
                           <Webcam
                             ref={webCamRef}
                             screenshotFormat="image/jpeg"
+                            videoConstraints={isMobileView ? mobileConstraints : null}
                           />
                         ) : (
                           <img src={imgSrc} />
