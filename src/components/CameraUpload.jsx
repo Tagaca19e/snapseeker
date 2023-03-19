@@ -4,12 +4,15 @@ import { AppContext } from './AppContextProvider';
 import { uploadFile } from '../hooks/uploadFile';
 import Webcam from 'react-webcam';
 
-// Use front facing camera on mobile devices.
-const mobileConstraints = {
-  facingMode: { exact: 'environment' },
-}
-
 export default function CameraUpload({ isMobileView }) {
+  const webCamHeigth = isMobileView ? 200 : 500;
+
+  // Use front facing camera on mobile devices.
+  const mobileConstraints = {
+    facingMode: { exact: 'environment' },
+    height: webCamHeigth,
+  };
+
   const { setSearchResults, openCamera, setOpenCamera, setIsLoading } =
     useContext(AppContext);
 
@@ -90,7 +93,10 @@ export default function CameraUpload({ isMobileView }) {
                           <Webcam
                             ref={webCamRef}
                             screenshotFormat="image/jpeg"
-                            videoConstraints={isMobileView ? mobileConstraints : null}
+                            style={{ width: '100%' }}
+                            videoConstraints={
+                              isMobileView ? mobileConstraints : null
+                            }
                           />
                         ) : (
                           <img src={imgSrc} />
