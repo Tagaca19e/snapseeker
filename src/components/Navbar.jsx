@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState, useRef, useCallback } from 'react';
+import { Fragment, useContext } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CameraIcon } from '@heroicons/react/20/solid';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -22,7 +22,8 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const { setSearchResults, setOpenCamera } = useContext(AppContext);
+  const { setSearchResults, setOpenCamera, setIsLoading } =
+    useContext(AppContext);
 
   // TODO(etagaca): Implement real user image.
   const user = {
@@ -32,6 +33,7 @@ export default function Navbar() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
     const res = await fetch('/api/get-products', {
       method: 'POST',
       headers: {
@@ -44,6 +46,7 @@ export default function Navbar() {
 
     const searchResults = await res.json();
     setSearchResults(searchResults.data.shopping_results);
+    setIsLoading(false);
   };
 
   return (

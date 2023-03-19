@@ -24,6 +24,7 @@
     "next-auth": "^4.19.2",
     "nodemailer": "^6.9.1",
     "react": "18.2.0",
+    "react-content-loader": "^6.2.1",
     "react-dom": "18.2.0",
     "react-svg": "^16.0.0",
     "react-webcam": "^7.0.1"

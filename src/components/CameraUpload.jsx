@@ -10,7 +10,7 @@ const mobileConstraints = {
 }
 
 export default function CameraUpload({ isMobileView }) {
-  const { setSearchResults, openCamera, setOpenCamera } =
+  const { setSearchResults, openCamera, setOpenCamera, setIsLoading } =
     useContext(AppContext);
 
   const [captured, setCaptured] = useState(false);
@@ -29,12 +29,14 @@ export default function CameraUpload({ isMobileView }) {
     const imageSrc = webCamRef.current.getScreenshot();
     setCaptured(true);
     setImgSrc(imageSrc);
+    cameraReset();
+    setIsLoading(true);
 
     const products = await uploadFile(imageSrc);
 
-    // TODO(etagaca): Handle rejection in promise and loading state.
+    // TODO(etagaca): Handle rejection in promise.
     setSearchResults(products.data.shopping_results);
-    cameraReset();
+    setIsLoading(false);
   }, [webCamRef, setImgSrc]);
 
   return (
@@ -58,7 +60,7 @@ export default function CameraUpload({ isMobileView }) {
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
