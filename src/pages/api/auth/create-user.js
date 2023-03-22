@@ -1,34 +1,67 @@
 import clientPromise from '/lib/mongodb';
+import bcrypt from 'bcrypt';
+import passwordValidation from 'lib/passwordValidation';
+
+const hashPassword = async (password) => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
+
 
 export default async function createUser(req, res) {
-  // Validate the request method.
-  if (req.method !== 'POST') {
-    return res.status(400).json({ message: 'Invalid request method!' });
-  }
+  const { email, password, first_name, last_name } = req.body;
+  const saltRounds = 10;
 
-  // Use mongodb client to connect to the database.
-  const client = await clientPromise;
-  const db = client.db('snapseeker');
+  try {
+    // Use mongodb client to connect to the database.
+    const client = await clientPromise;
+    const db = client.db('snapseeker');
 
-  // Check if email already exists.
-  const users = await db
-    .collection('users')
-    .find({ email: { $eq: req.body.email } })
-    .toArray();
+    if (!passwordValidation(password)) {
+      return res
+        .status(400)
+        .json({
+          message:
+            'Password must be 8 Characters or longer and contain at least one lowercase letter, one uppercase letter, one number, and one special characters',
+        });
+    }
 
-  if (users.length > 0) {
-    // Send 409 status indicating conflict.
-    // Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-    return res
-      .status(409)
-      .json({ message: 'User already exists! Please login.' });
-  }
 
-  // Create user.
-  const result = await db.collection('users').insertOne(req.body);
-  if (result.acknowledged) {
-    res.status(200).json({ message: 'User created! You may now login.' });
-  } else {
-    res.status(400).json({ message: 'User not created! Please try again.' });
+    // Check if email already exists.
+    const users = await db
+      .collection('users')
+      .find({ email: req.body.email })
+      .toArray();
+
+    if (users.length > 0) {
+      // Send 409 status indicating conflict.
+      // Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+      return res
+        .status(409)
+        .json({ message: 'User already exists! Please login.' });
+    }
+    // Validate the request method.
+
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+
+    // Create user.
+    const result = await db.collection('users').insertOne({
+      name: `${first_name} ${last_name}`,
+      email: email,
+      password: hashedPassword,
+    });
+
+    res.status(201).json({ message: 'User created! You may now login.' });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: 'User not created! Please try again.' });
   }
 }
