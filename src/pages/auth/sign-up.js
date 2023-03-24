@@ -90,7 +90,7 @@ export default function SignUp() {
                   placeholder="First Name"
                   type="text"
                   name="first_name"
-                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                   required
                 />
               </div>
@@ -109,7 +109,7 @@ export default function SignUp() {
                   placeholder="Last Name"
                   type="text"
                   name="last_name"
-                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                  className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                   required
                 />
               </div>
@@ -129,7 +129,7 @@ export default function SignUp() {
                 placeholder="Email Address"
                 type="email"
                 name="email"
-                className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                 required
               />
             </div>
@@ -148,7 +148,7 @@ export default function SignUp() {
                 placeholder="Password"
                 type="password"
                 name="password"
-                className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-dark disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
+                className="form-input mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 disabled:opacity-90 sm:text-sm sm:leading-5"
                 required
               />
             </div>
@@ -158,7 +158,7 @@ export default function SignUp() {
             <span className="block w-full rounded-md shadow-sm">
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md border border-transparent bg-dark py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-2"
+                className="flex w-full justify-center rounded-md border border-transparent bg-primary py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out focus:outline-none focus:ring-2"
                 disabled={buttonDisabled}
               >
                 {loading ? 'Loading...' : 'Register'}
@@ -167,7 +167,7 @@ export default function SignUp() {
                 <p
                   className={`mt-2 rounded-md border p-1 text-center ${
                     statusCode === 200
-                      ? 'border-dark text-dark'
+                      ? 'border-primary text-primary'
                       : 'bg-error_light text-error'
                   }`}
                 >
@@ -182,7 +182,7 @@ export default function SignUp() {
             <div className="text-sm leading-5 text-gray-700">
               Already have an account?{' '}
               <a
-                className="text-primary-dark hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
+                className="text-primary-primary hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
                 href="/auth/login"
               >
                 Log in.

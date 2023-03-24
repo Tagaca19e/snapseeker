@@ -1,0 +1,25 @@
+import SerpApi from 'google-search-results-nodejs';
+
+export default async function parseImage(req, res) {
+  if (req.method === 'GET') {
+    res.status(400).json({ message: 'Invalid request method' });
+    return;
+  }
+
+  const search = new SerpApi.GoogleSearch(process.env.SERP_API_KEY);
+  try {
+    search.json(
+      {
+        engine: 'google_lens',
+        url: req.body.url,
+      },
+      (data) => {
+        res.status(200).json({ data });
+      }
+    );
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: 'Something went wrong with image search.' });
+  }
+}
