@@ -3,6 +3,9 @@
 # history
 .history
 
+# workspace
+.vs
+
 # dependencies
 /node_modules
 /.pnp

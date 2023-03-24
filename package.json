@@ -14,7 +14,6 @@
     "@next/font": "13.1.6",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
-    "bcrpyt": "^2.0.0",
     "bcrypt": "^5.1.0",
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
@@ -25,8 +24,10 @@
     "next-auth": "^4.19.2",
     "nodemailer": "^6.9.1",
     "react": "18.2.0",
+    "react-content-loader": "^6.2.1",
     "react-dom": "18.2.0",
-    "react-svg": "^16.0.0"
+    "react-svg": "^16.0.0",
+    "react-webcam": "^7.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
