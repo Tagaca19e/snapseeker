@@ -81,8 +81,8 @@ export default function ProductList({ products }) {
                       {product.product_price}
                     </p>
                   </div>
-                  <div class="text-center py-6 my-1">
-                      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
+                  <div className="text-center py-6 my-1">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
                       >
                         Delete
                       </button>
