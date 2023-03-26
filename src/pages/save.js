@@ -29,13 +29,6 @@ export async function getServerSideProps(context) {
 
   const db = client.db('snapseeker');
   const data = await db.collection('save_items').find({ user: user_email }).limit(20).toArray();
-  // Find the user in the database.
- // if (!user) {
- //   return res
- //     .status(400)
- //     .json({ message: 'No Save Items' });
- // }
-
   const properties = JSON.parse(JSON.stringify(data));
 
 

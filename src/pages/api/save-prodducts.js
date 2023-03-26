@@ -4,11 +4,6 @@ export default async function saveData(req, res) {
    const {user_id,item_link,item_thumbnail,
   item_title,item_rating,item_price} = req.body;
 
-  //TODO: display the items on save items
-  //TODO: delete save items
-  //TODO: make functions modules
-
-  
 
     try {
       // Use mongodb client to connect to the database.

@@ -21,30 +21,24 @@ export default function ProductList({ products }) {
     ...useSession().data?.user
   }
 
-//   const saveProduct = async (product) => {
-//     try {
-//      fetch('http://localhost:3000/api/save-prodducts',{
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         user_id: user.email,
-//         item_link: product.link,
-//         item_thumbnail: product.thumbnail,
-//         item_title: product.title,
-//         item_rating: product.rating,
-//         item_price: product.price,
-//       }),
-//     }).then(async (response) => {
-//       let data = await response.json();
-//       alert(data.message)
-//       console.log(response.status);
-//     });
-//     }catch (error) {
-//       console.error('error: ', error);
-//     }
-//   }
+   const deleteItem = async (product) => {
+     try {
+      fetch('http://localhost:3000/api/delete-item',{
+       method: 'DELETE',
+       body: JSON.stringify({
+        
+         user_id: user.email,
+         item_id: product._id
+       }),
+     }).then(async (response) => {
+       let data = await response.json();
+       alert(data.message)
+       console.log(response.status);
+     });
+     }catch (error) {
+       console.error('error: ', error);
+     }
+   }
 
   return (
     <div className="bg-white">
@@ -83,7 +77,7 @@ export default function ProductList({ products }) {
                   </div>
                   <div className="text-center py-6 my-1">
                       <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
-                      >
+                      onClick={() =>deleteItem(product)}>
                         Delete
                       </button>
                     </div>
