@@ -2,17 +2,13 @@ import { useEffect, useContext, useState } from 'react';
 import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
 
-//TODO: Display save items 
-//TODO: delete items
-//TODO: Port functions to other js
-
 
 
 export default function ProductList({ products }) {
   // Set initial state to the products from server-side rendering.
   const [productList, setProductList] = useState(
-    products.data.shopping_results
-  );
+    products);
+  
   const { searchResults, isLoading } = useContext(AppContext);
 
   useEffect(() => {
@@ -25,30 +21,30 @@ export default function ProductList({ products }) {
     ...useSession().data?.user
   }
 
-  const saveProduct = async (product) => {
-    try {
-     fetch('http://localhost:3000/api/save-prodducts',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user_id: user.email,
-        item_link: product.link,
-        item_thumbnail: product.thumbnail,
-        item_title: product.title,
-        item_rating: product.rating,
-        item_price: product.price,
-      }),
-    }).then(async (response) => {
-      let data = await response.json();
-      alert(data.message)
-      console.log(response.status);
-    });
-    }catch (error) {
-      console.error('error: ', error);
-    }
-  }
+//   const saveProduct = async (product) => {
+//     try {
+//      fetch('http://localhost:3000/api/save-prodducts',{
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         user_id: user.email,
+//         item_link: product.link,
+//         item_thumbnail: product.thumbnail,
+//         item_title: product.title,
+//         item_rating: product.rating,
+//         item_price: product.price,
+//       }),
+//     }).then(async (response) => {
+//       let data = await response.json();
+//       alert(data.message)
+//       console.log(response.status);
+//     });
+//     }catch (error) {
+//       console.error('error: ', error);
+//     }
+//   }
 
   return (
     <div className="bg-white">
@@ -58,37 +54,37 @@ export default function ProductList({ products }) {
             {productList &&
               productList.map((product) => (
                 <div
-                  key={product.position}
-                  href={product.link}
+                  key={product._id}
+                  href={product.product_link}
                   className="group relative"
                 >
                   <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
                     <img
-                      src={product.thumbnail}
-                      alt={product.title}
+                      src={product.product_thumbnail}
+                      alt={product.product_title}
                       className="h-full w-full object-cover object-center lg:h-full lg:w-full"
                     />
                   </div>
                   <div className="mt-4 flex justify-between">
                     <div>
                       <h3 className="text-sm text-gray-700">
-                        <a href={product.link} target="_blank">
+                        <a href={product.product_link} target="_blank">
 
-                          {product.title}
+                          {product.product_title}
                         </a>
                       </h3>
                       <p className="mt-1 text-sm text-gray-500">
-                        {product.rating}
+                        {product.product_rating}
                       </p>
                     </div>
                     <p className="text-sm font-medium text-gray-900">
-                      {product.price}
+                      {product.product_price}
                     </p>
                   </div>
                   <div class="text-center py-6 my-1">
                       <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
-                      onClick={() =>saveProduct(product)}>
-                        Save
+                      >
+                        Delete
                       </button>
                     </div>
                 </div>
