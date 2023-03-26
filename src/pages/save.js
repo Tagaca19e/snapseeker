@@ -22,7 +22,6 @@ export default function dashboard2({ products, isMobileView }) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-
   const user_email = session.user.email;
 
   const client = await clientPromise;

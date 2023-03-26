@@ -1,6 +1,7 @@
 import { useEffect, useContext, useState } from 'react';
 import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
+import { useRouter, userRouter } from 'next/router';
 
 
 
@@ -8,6 +9,7 @@ export default function ProductList({ products }) {
   // Set initial state to the products from server-side rendering.
   const [productList, setProductList] = useState(
     products);
+    const router = useRouter();
   
   const { searchResults, isLoading } = useContext(AppContext);
 
@@ -25,15 +27,17 @@ export default function ProductList({ products }) {
      try {
       fetch('http://localhost:3000/api/delete-item',{
        method: 'DELETE',
+       headers: {
+        'Content-Type': 'application/json',
+       },
        body: JSON.stringify({
-        
          user_id: user.email,
-         item_id: product._id
+         item_title: product.product_title,
        }),
      }).then(async (response) => {
        let data = await response.json();
-       alert(data.message)
-       console.log(response.status);
+       alert(data.message);
+       router.reload();
      });
      }catch (error) {
        console.error('error: ', error);
