@@ -22,15 +22,13 @@ export default function dashboard2({ products, isMobileView }) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  console.log(session.user.email);
-  console.log(context.query);
 
   const user_email = session.user.email;
 
   const client = await clientPromise;
 
   const db = client.db('snapseeker');
-  const data = await db.collection('save_items').find({ user_email: context.query }).limit(20).toArray();
+  const data = await db.collection('save_items').find({ }).limit(20).toArray();
   // Find the user in the database.
  // if (!user) {
  //   return res
