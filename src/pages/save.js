@@ -28,7 +28,7 @@ export async function getServerSideProps(context) {
   const client = await clientPromise;
 
   const db = client.db('snapseeker');
-  const data = await db.collection('save_items').find({ }).limit(20).toArray();
+  const data = await db.collection('save_items').find({ user: user_email }).limit(20).toArray();
   // Find the user in the database.
  // if (!user) {
  //   return res
