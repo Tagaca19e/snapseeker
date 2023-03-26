@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState } from 'react';
 import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
-import { useRouter, userRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 
 
@@ -9,8 +9,8 @@ export default function ProductList({ products }) {
   // Set initial state to the products from server-side rendering.
   const [productList, setProductList] = useState(
     products);
-    const router = useRouter();
-  
+  const router = useRouter();
+
   const { searchResults, isLoading } = useContext(AppContext);
 
   useEffect(() => {
@@ -23,26 +23,26 @@ export default function ProductList({ products }) {
     ...useSession().data?.user
   }
 
-   const deleteItem = async (product) => {
-     try {
-      fetch('http://localhost:3000/api/delete-item',{
-       method: 'DELETE',
-       headers: {
-        'Content-Type': 'application/json',
-       },
-       body: JSON.stringify({
-         user_id: user.email,
-         item_title: product.product_title,
-       }),
-     }).then(async (response) => {
-       let data = await response.json();
-       alert(data.message);
-       router.reload();
-     });
-     }catch (error) {
-       console.error('error: ', error);
-     }
-   }
+  const deleteItem = async (product) => {
+    try {
+      fetch('http://localhost:3000/api/delete-item', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.email,
+          item_title: product.product_title,
+        }),
+      }).then(async (response) => {
+        let data = await response.json();
+        alert(data.message);
+        router.reload();
+      });
+    } catch (error) {
+      console.error('error: ', error);
+    }
+  }
 
   return (
     <div className="bg-white">
@@ -80,11 +80,11 @@ export default function ProductList({ products }) {
                     </p>
                   </div>
                   <div className="text-center py-6 my-1">
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
-                      onClick={() =>deleteItem(product)}>
-                        Delete
-                      </button>
-                    </div>
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
+                      onClick={() => deleteItem(product)}>
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))}
           </div>

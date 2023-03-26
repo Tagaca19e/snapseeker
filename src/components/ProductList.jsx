@@ -2,10 +2,6 @@ import { useEffect, useContext, useState } from 'react';
 import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
 
-//TODO: Display save items 
-//TODO: delete items
-//TODO: Port functions to other js
-
 
 
 export default function ProductList({ products }) {
@@ -27,25 +23,25 @@ export default function ProductList({ products }) {
 
   const saveProduct = async (product) => {
     try {
-     fetch('http://localhost:3000/api/save-prodducts',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user_id: user.email,
-        item_link: product.link,
-        item_thumbnail: product.thumbnail,
-        item_title: product.title,
-        item_rating: product.rating,
-        item_price: product.price,
-      }),
-    }).then(async (response) => {
-      let data = await response.json();
-      alert(data.message)
-      console.log(response.status);
-    });
-    }catch (error) {
+      fetch('http://localhost:3000/api/save-prodducts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.email,
+          item_link: product.link,
+          item_thumbnail: product.thumbnail,
+          item_title: product.title,
+          item_rating: product.rating,
+          item_price: product.price,
+        }),
+      }).then(async (response) => {
+        let data = await response.json();
+        alert(data.message)
+        console.log(response.status);
+      });
+    } catch (error) {
       console.error('error: ', error);
     }
   }
@@ -86,11 +82,11 @@ export default function ProductList({ products }) {
                     </p>
                   </div>
                   <div class="text-center py-6 my-1">
-                      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
-                      onClick={() =>saveProduct(product)}>
-                        Save
-                      </button>
-                    </div>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
+                      onClick={() => saveProduct(product)}>
+                      Save
+                    </button>
+                  </div>
                 </div>
               ))}
           </div>

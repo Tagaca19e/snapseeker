@@ -22,6 +22,15 @@ export default function dashboard2({ products, isMobileView }) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
+
   const user_email = session.user.email;
 
   const client = await clientPromise;
@@ -31,14 +40,7 @@ export async function getServerSideProps(context) {
   const properties = JSON.parse(JSON.stringify(data));
 
 
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/auth/login',
-        permanent: false,
-      },
-    };
-  }
+
 
   const userAgent = context.req.headers['user-agent'];
   const isMobileView = userAgent.match(
