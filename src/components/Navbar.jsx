@@ -7,8 +7,8 @@ import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
 
 const navigation = [
-  { name: 'Home', href: '#', current: true },
-  { name: 'Saved', href: '#', current: false },
+  { name: 'Home', href: '/dashboard', current: true },
+  { name: 'Saved', href: '/save', current: true },
   { name: 'Coupons', href: '#', current: false },
 ];
 const userNavigation = [
