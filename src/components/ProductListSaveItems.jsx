@@ -1,16 +1,10 @@
 import { useEffect, useContext, useState } from 'react';
 import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-
-
 
 export default function ProductList({ products }) {
   // Set initial state to the products from server-side rendering.
-  const [productList, setProductList] = useState(
-    products);
-  const router = useRouter();
-
+  const [productList, setProductList] = useState(products);
   const { searchResults, isLoading } = useContext(AppContext);
 
   useEffect(() => {
@@ -20,29 +14,30 @@ export default function ProductList({ products }) {
   }, [searchResults, isLoading]);
 
   const user = {
-    ...useSession().data?.user
-  }
+    ...useSession().data?.user,
+  };
+
+  console.log('product list saved: ', productList);
 
   const deleteItem = async (product) => {
     try {
-      fetch('http://localhost:3000/api/delete-item', {
-        method: 'DELETE',
+      fetch('../api/delete-product', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: user.email,
-          item_title: product.product_title,
+          user: user.email,
+          product_id: product.product_id,
         }),
       }).then(async (response) => {
-        let data = await response.json();
-        alert(data.message);
-        router.reload();
+        const data = await response.json();
+        setProductList(data.updatedUserSavedProducts);
       });
     } catch (error) {
       console.error('error: ', error);
     }
-  }
+  };
 
   return (
     <div className="bg-white">
@@ -54,7 +49,7 @@ export default function ProductList({ products }) {
                 <div
                   key={product._id}
                   href={product.product_link}
-                  className="group relative"
+                  className="group relative flex flex-col justify-between"
                 >
                   <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
                     <img
@@ -67,7 +62,6 @@ export default function ProductList({ products }) {
                     <div>
                       <h3 className="text-sm text-gray-700">
                         <a href={product.product_link} target="_blank">
-
                           {product.product_title}
                         </a>
                       </h3>
@@ -79,9 +73,11 @@ export default function ProductList({ products }) {
                       {product.product_price}
                     </p>
                   </div>
-                  <div className="text-center py-6 my-1">
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-0.5 px-4 mr-3 rounded"
-                      onClick={() => deleteItem(product)}>
+                  <div className="my-1 py-6">
+                    <button
+                      className="mr-3 rounded bg-blue-600 py-0.5 px-4 font-bold text-white hover:bg-blue-700"
+                      onClick={() => deleteItem(product)}
+                    >
                       Delete
                     </button>
                   </div>

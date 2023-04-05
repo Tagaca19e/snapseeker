@@ -1,32 +1,34 @@
 import PopUpContainer from './PopUpContainer';
-import { Dialog, Transition } from '@headlessui/react';
-function PopUp({ isOpen, setIsOpen, popUpLoading, comparisons }) {
-//   console.log(comparisons);
+import { Dialog } from '@headlessui/react';
+export default function PopUp({
+  isOpen,
+  setIsOpen,
+  popUpLoading,
+  comparisons,
+}) {
+  // Create a Map to keep track of the lowest price for each item
+  const lowestPrices = new Map();
 
-// Create a Map to keep track of the lowest price for each item
-const lowestPrices = new Map();
+  // Loop through each item in the array
+  for (const item of comparisons) {
+    // If the item doesn't have a price, skip it
+    if (!item.total_price) {
+      continue;
+    }
 
-// Loop through each item in the array
-for (const item of comparisons) {
-  // If the item doesn't have a price, skip it
-  
-  if (!item.total_price) {
-    continue;
-  }
-//   const price = item.total_price.split("$")[1] * 1
-
-//   If the item is not already in the Map or its price is lower than the current lowest price, update the Map
-//   if (!lowestPrices.has(item.name) || price < lowestPrices.get(name)) {
+    // If the item is not already in the Map or its price is lower than the current lowest price, update the Map
     lowestPrices.set(item.name, item.total_price);
-//   }
-}
+  }
 
-const filteredItems = Array.from(lowestPrices, ([name, total_price]) => ({ name, total_price }));
-
+  const filteredItems = Array.from(lowestPrices, ([name, total_price]) => ({
+    name,
+    total_price,
+  }));
 
   const closeModal = () => {
     setIsOpen(false);
   };
+
   return (
     <PopUpContainer isOpen={isOpen} closeModal={closeModal}>
       <div
@@ -44,7 +46,7 @@ const filteredItems = Array.from(lowestPrices, ([name, total_price]) => ({ name,
         </div>
 
         {popUpLoading ? (
-          <div className='px-6 mt-3'>Loading...</div>
+          <div className="mt-3 px-6">Loading...</div>
         ) : (
           <div className="mt-3 max-h-[300px] overflow-y-scroll px-6">
             <ul>
@@ -76,4 +78,3 @@ const filteredItems = Array.from(lowestPrices, ([name, total_price]) => ({ name,
     </PopUpContainer>
   );
 }
-export default PopUp;

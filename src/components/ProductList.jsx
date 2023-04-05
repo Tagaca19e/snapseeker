@@ -3,15 +3,19 @@ import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
 import PopUp from './PopUp';
 
-export default function ProductList({ products }) {
+export default function ProductList({ products, userSavedItemIds }) {
   // Set initial state to the products from server-side rendering.
   const [productList, setProductList] = useState(
     products.data.shopping_results
   );
+
   const { searchResults, isLoading } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [comparisons, setComparisons] = useState([]);
   const [popUpLoading, setPopUpLoading] = useState(false);
+  const [savedProductIds, setSavedProductIds] = useState(
+    new Set(userSavedItemIds)
+  );
 
   useEffect(() => {
     if (searchResults.length) {
@@ -19,30 +23,61 @@ export default function ProductList({ products }) {
     }
   }, [searchResults, isLoading]);
 
-  // console.log(productList)
   const user = {
     ...useSession().data?.user,
   };
 
   const saveProduct = async (product) => {
+    if (savedProductIds.has(product.product_id)) {
+      setSavedProductIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(product.product_id);
+        return newSet;
+      });
+
+      try {
+        const res = await fetch('../api/delete-product', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user: user.email,
+            product_id: product.product_id,
+          }),
+        });
+
+        const data = await res.json();
+        console.log('res save product: ', data);
+      } catch (error) {
+        console.error('error: ', error);
+      }
+      return;
+    }
+
     try {
-      fetch('http://localhost:3000/api/save-prodducts', {
+      setSavedProductIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(product.product_id);
+        return newSet;
+      });
+      fetch('../api/save-product', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: user.email,
-          item_link: product.link,
-          item_thumbnail: product.thumbnail,
-          item_title: product.title,
-          item_rating: product.rating,
-          item_price: product.price,
+          user: user.email,
+          product_id: product.product_id,
+          product_link: product.link,
+          product_thumbnail: product.thumbnail,
+          product_title: product.title,
+          product_rating: product.rating,
+          product_price: product.price,
         }),
       }).then(async (response) => {
-        let data = await response.json();
-        alert(data.message);
-        console.log(response.status);
+        const data = await response.json();
+        console.log('res save product: ', data);
       });
     } catch (error) {
       console.error('error: ', error);
@@ -50,26 +85,21 @@ export default function ProductList({ products }) {
   };
 
   const getProduct = async (productId) => {
-    const url = process.env.NEXT_PUBLIC_DOMAIN;
-    const res = await fetch(
-      `${url}/api/product-compare?productId=${productId}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const res = await fetch(`../api/product-compare?productId=${productId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     const data = await res.json();
     return data;
   };
 
   const handleCompare = async (productId) => {
-
     setIsOpen(true);
     setPopUpLoading(true);
+
     const res = await getProduct(productId);
-    console.log(res)
     if (res.data) {
       setComparisons(res.data?.sellers_results?.online_sellers);
     }
@@ -78,7 +108,7 @@ export default function ProductList({ products }) {
 
   return (
     <>
-      {/* popup for showing product comparisons */}
+      {/* Popup for showing product comparisons */}
       <PopUp
         popUpLoading={popUpLoading}
         isOpen={isOpen}
@@ -95,7 +125,7 @@ export default function ProductList({ products }) {
                   <div
                     key={product.position}
                     href={product.link}
-                    className="group relative"
+                    className="group relative flex flex-col justify-between"
                   >
                     <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
                       <img
@@ -119,20 +149,26 @@ export default function ProductList({ products }) {
                         {product.price}
                       </p>
                     </div>
-                    <div class="my-1 flex flex-wrap justify-center gap-2 py-6 text-center">
+                    <div class="my-1 flex flex-wrap gap-2 py-6 text-center">
                       <button
-                        class="mr-3 rounded bg-blue-600 py-0.5 px-4 font-bold text-white hover:bg-blue-700"
+                        class={`border-gray mr-3 rounded border py-0.5 px-4 font-bold  hover:bg-primary hover:text-white ${
+                          savedProductIds.has(product.product_id)
+                            ? 'bg-primary text-white'
+                            : 'text-gray-600'
+                        }`}
                         onClick={() => saveProduct(product)}
                       >
-                        Save
+                        {savedProductIds.has(product.product_id) ? 'saved' : 'save'}
                       </button>
-                      {product?.serpapi_product_api_comparisons && <button
-                        onClick={() => handleCompare(product?.product_id)}
-                        class="mr-3 rounded bg-[#3bb77e] 
+                      {product?.serpapi_product_api_comparisons && (
+                        <button
+                          onClick={() => handleCompare(product?.product_id)}
+                          class="mr-3 rounded bg-[#3bb77e] 
                     py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
-                      >
-                        Compare prices
-                      </button>}
+                        >
+                          Compare prices
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

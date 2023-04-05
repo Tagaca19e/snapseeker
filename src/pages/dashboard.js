@@ -1,17 +1,20 @@
-import { React } from 'react';
+import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import ProductList from '@/components/ProductList';
 import { getSession } from 'next-auth/react';
 import CameraUpload from '../components/CameraUpload';
 import ProductListLoader from '@/components/ProductListLoader';
+import clientPromise from '/lib/mongodb';
 
-export default function dashboard2({ products, isMobileView}) {
+export default function Dashboard({ products, isMobileView, userSavedItemIds }) {
+  console.log({ userSavedItemIds });
+
   return (
     <div>
       <Layout>
         <CameraUpload isMobileView={isMobileView} />
         <ProductListLoader />
-        <ProductList products={products} />
+        <ProductList userSavedItemIds={userSavedItemIds} products={products} />
       </Layout>
     </div>
   );
@@ -40,6 +43,20 @@ export async function getServerSideProps(context) {
     };
   }
 
+  // Find all saved items from user.
+  const client = await clientPromise;
+  const db = client.db('snapseeker');
+
+  let userSavedItems = await db
+    .collection('save_items')
+    .find({ user: session.user.email })
+    .limit(20)
+    .toArray();
+
+  userSavedItems = JSON.parse(JSON.stringify(userSavedItems));
+  
+  const userSavedItemIds = userSavedItems.map((item) => item.product_id);
+
   const userAgent = context.req.headers['user-agent'];
   const isMobileView = userAgent.match(
     /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
@@ -52,6 +69,7 @@ export async function getServerSideProps(context) {
       session,
       products: data,
       isMobileView,
+      userSavedItemIds: userSavedItemIds || [],
     },
   };
 }
