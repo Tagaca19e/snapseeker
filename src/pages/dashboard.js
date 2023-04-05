@@ -6,15 +6,20 @@ import CameraUpload from '../components/CameraUpload';
 import ProductListLoader from '@/components/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
-export default function Dashboard({ products, isMobileView, userSavedItemIds }) {
-  console.log({ userSavedItemIds });
-
+export default function Dashboard({
+  products,
+  isMobileView,
+  userSavedItemIds,
+}) {
   return (
     <div>
       <Layout>
         <CameraUpload isMobileView={isMobileView} />
         <ProductListLoader />
-        <ProductList userSavedItemIds={userSavedItemIds} products={products} />
+        <ProductList
+          userSavedItemIds={userSavedItemIds}
+          products={products.data.shopping_results}
+        />
       </Layout>
     </div>
   );
@@ -54,7 +59,6 @@ export async function getServerSideProps(context) {
     .toArray();
 
   userSavedItems = JSON.parse(JSON.stringify(userSavedItems));
-  
   const userSavedItemIds = userSavedItems.map((item) => item.product_id);
 
   const userAgent = context.req.headers['user-agent'];

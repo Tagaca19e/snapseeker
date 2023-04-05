@@ -1,18 +1,22 @@
 import { React } from 'react';
 import Layout from '../components/Layout';
-import ProductListSaveItems from '@/components/ProductListSaveItems';
+import ProductList from '@/components/ProductList';
 import { getSession } from 'next-auth/react';
 import CameraUpload from '../components/CameraUpload';
 import ProductListLoader from '@/components/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
-export default function dashboard2({ products, isMobileView }) {
+export default function SavedItems({ savedItems, savedItemIds, isMobileView }) {
   return (
     <div>
       <Layout>
         <CameraUpload isMobileView={isMobileView} />
         <ProductListLoader />
-        <ProductListSaveItems products={products} />
+        <ProductList
+          products={savedItems}
+          savedProductsPage={true}
+          userSavedItemIds={savedItemIds}
+        />
       </Layout>
     </div>
   );
@@ -33,8 +37,15 @@ export async function getServerSideProps(context) {
   const client = await clientPromise;
   const db = client.db('snapseeker');
 
-  const data = await db.collection('save_items').find({ user: session.user.email }).limit(20).toArray();
-  const properties = JSON.parse(JSON.stringify(data));
+  const data = await db
+    .collection('save_items')
+    .find({ user: session.user.email })
+    .limit(20)
+    .toArray();
+  const savedItems = JSON.parse(JSON.stringify(data));
+
+  // Keep track of item ids to mark items that are currently saved.
+  const savedItemIds = savedItems.map((item) => item.product_id);
 
   const userAgent = context.req.headers['user-agent'];
   const isMobileView = userAgent.match(
@@ -46,7 +57,8 @@ export async function getServerSideProps(context) {
   return {
     props: {
       session,
-      products: properties,
+      savedItems,
+      savedItemIds,
       isMobileView,
     },
   };

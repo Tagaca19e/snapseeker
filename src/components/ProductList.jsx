@@ -3,13 +3,15 @@ import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
 import PopUp from './PopUp';
 
-export default function ProductList({ products, userSavedItemIds }) {
-  // Set initial state to the products from server-side rendering.
-  const [productList, setProductList] = useState(
-    products.data.shopping_results
-  );
-
+export default function ProductList({
+  products,
+  savedProductsPage = false,
+  userSavedItemIds = [],
+}) {
   const { searchResults, isLoading } = useContext(AppContext);
+
+  // Set initial state to the products from server-side rendering.
+  const [productList, setProductList] = useState(products);
   const [isOpen, setIsOpen] = useState(false);
   const [comparisons, setComparisons] = useState([]);
   const [popUpLoading, setPopUpLoading] = useState(false);
@@ -27,6 +29,28 @@ export default function ProductList({ products, userSavedItemIds }) {
     ...useSession().data?.user,
   };
 
+  const deleteProduct = async (product) => {
+    try {
+      const res = await fetch('../api/delete-product', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user: user.email,
+          product_id: product.product_id,
+        }),
+      });
+
+      const data = await res.json();
+      if (savedProductsPage) {
+        setProductList(data.updatedUserSavedProducts);
+      }
+    } catch (error) {
+      console.error('error: ', error);
+    }
+  };
+
   const saveProduct = async (product) => {
     if (savedProductIds.has(product.product_id)) {
       setSavedProductIds((prev) => {
@@ -35,52 +59,30 @@ export default function ProductList({ products, userSavedItemIds }) {
         return newSet;
       });
 
+      deleteProduct(product);
+    } else {
       try {
-        const res = await fetch('../api/delete-product', {
+        setSavedProductIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.add(product.product_id);
+          return newSet;
+        });
+        fetch('../api/save-product', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             user: user.email,
-            product_id: product.product_id,
+            ...product,
           }),
+        }).then(async (response) => {
+          const data = await response.json();
+          console.log('res save product: ', data);
         });
-
-        const data = await res.json();
-        console.log('res save product: ', data);
       } catch (error) {
         console.error('error: ', error);
       }
-      return;
-    }
-
-    try {
-      setSavedProductIds((prev) => {
-        const newSet = new Set(prev);
-        newSet.add(product.product_id);
-        return newSet;
-      });
-      fetch('../api/save-product', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: user.email,
-          product_id: product.product_id,
-          product_link: product.link,
-          product_thumbnail: product.thumbnail,
-          product_title: product.title,
-          product_rating: product.rating,
-          product_price: product.price,
-        }),
-      }).then(async (response) => {
-        const data = await response.json();
-        console.log('res save product: ', data);
-      });
-    } catch (error) {
-      console.error('error: ', error);
     }
   };
 
@@ -158,7 +160,15 @@ export default function ProductList({ products, userSavedItemIds }) {
                         }`}
                         onClick={() => saveProduct(product)}
                       >
-                        {savedProductIds.has(product.product_id) ? 'saved' : 'save'}
+                        {savedProductsPage ? (
+                          <>delete</>
+                        ) : (
+                          <>
+                            {savedProductIds.has(product.product_id)
+                              ? 'saved'
+                              : 'save'}
+                          </>
+                        )}
                       </button>
                       {product?.serpapi_product_api_comparisons && (
                         <button
@@ -166,7 +176,7 @@ export default function ProductList({ products, userSavedItemIds }) {
                           class="mr-3 rounded bg-[#3bb77e] 
                     py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
                         >
-                          Compare prices
+                          compare prices
                         </button>
                       )}
                     </div>

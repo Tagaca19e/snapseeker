@@ -2,15 +2,16 @@ import { Fragment, useContext } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CameraIcon } from '@heroicons/react/20/solid';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { AppContext } from './AppContextProvider';
-import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
-const navigation = [
-  { name: 'Home', href: '/dashboard', current: true },
-  { name: 'Saved', href: '/save', current: true },
+let navigation = [
+  { name: 'Home', href: '/dashboard', current: false },
+  { name: 'Saved', href: '/saved-items', current: false },
   { name: 'Coupons', href: '#', current: false },
 ];
+
 const userNavigation = [
   { name: 'Your Profile', href: '#', onClick: {} },
   { name: 'Settings', href: '#', onClick: {} },
@@ -22,6 +23,18 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const router = useRouter();
+
+  // Check for current page.
+  navigation = navigation.map((nav) => {
+    if (nav.href === router.pathname) {
+      nav.current = true;
+    } else {
+      nav.current = false;
+    }
+    return nav;
+  });
+
   const { setSearchResults, setOpenCamera, setIsLoading } =
     useContext(AppContext);
 
