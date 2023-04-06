@@ -153,7 +153,7 @@ export default function ProductList({
                     </div>
                     <div class="my-1 flex flex-wrap gap-2 py-6 text-center">
                       <button
-                        class={`border-gray mr-3 rounded border py-0.5 px-4 font-bold  hover:bg-primary hover:text-white ${
+                        class={`border-gray mr-3 rounded border py-0.5 px-4 font-bold ${
                           savedProductIds.has(product.product_id)
                             ? 'bg-primary text-white'
                             : 'text-gray-600'

@@ -1,29 +1,33 @@
 import PopUpContainer from './PopUpContainer';
 import { Dialog } from '@headlessui/react';
+import { BuildingStorefrontIcon } from '@heroicons/react/20/solid';
+
 export default function PopUp({
   isOpen,
   setIsOpen,
   popUpLoading,
   comparisons,
 }) {
-  // Create a Map to keep track of the lowest price for each item
-  const lowestPrices = new Map();
+  // Create a hashmap to keep track of lowest price and link for each item.
+  const lowestPrices = {};
 
-  // Loop through each item in the array
+  // Loop through each item in comparisons array, there may be multipe stores
+  // that offer the same item.
   for (const item of comparisons) {
-    // If the item doesn't have a price, skip it
+    // If the item doesn't have a price, skip it.
     if (!item.total_price) {
       continue;
     }
 
-    // If the item is not already in the Map or its price is lower than the current lowest price, update the Map
-    lowestPrices.set(item.name, item.total_price);
+    // If item is not already in hashmap or its price is lower than current
+    // lowest price, update the hashmap.
+    if (!(item.name in lowestPrices)) {
+      lowestPrices[item.name] = item;
+    } else if (item.total_price < lowestPrices[item.name].total_price) {
+      lowestPrices[item.name].total_price = item.total_price;
+    }
   }
-
-  const filteredItems = Array.from(lowestPrices, ([name, total_price]) => ({
-    name,
-    total_price,
-  }));
+  const filteredItems = Object.values(lowestPrices);
 
   const closeModal = () => {
     setIsOpen(false);
@@ -48,16 +52,24 @@ export default function PopUp({
         {popUpLoading ? (
           <div className="mt-3 px-6">Loading...</div>
         ) : (
-          <div className="mt-3 max-h-[300px] overflow-y-scroll px-6">
+          <div className="mt-3 max-h-[300px] overflow-y-auto px-6">
             <ul>
               {filteredItems?.map((company) => (
                 <li
                   key={company.position}
-                  className="flex justify-between border-b border-gray-200 py-3"
+                  className="cursor-pointer  border-b border-gray-200 py-3"
                 >
-                  <h3>{company.name}</h3>
-
-                  <h6>{company.total_price}</h6>
+                  <a
+                    href={company.link}
+                    target="blank"
+                    className="flex justify-between"
+                  >
+                    <span className="flex items-center gap-3">
+                      <BuildingStorefrontIcon className="h-5 w-5 text-gray-400" />
+                      <h3>{company.name}</h3>
+                    </span>
+                    <h6>{company.total_price}</h6>
+                  </a>
                 </li>
               ))}
             </ul>
