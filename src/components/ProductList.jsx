@@ -29,6 +29,11 @@ export default function ProductList({
     ...useSession().data?.user,
   };
 
+  /**
+   * Deletes a product from the user's saved products in the database.
+   * @param {Object} product - Product object to delete.
+   * @see
+   */
   const deleteProduct = async (product) => {
     try {
       const res = await fetch('../api/delete-product', {
@@ -51,7 +56,13 @@ export default function ProductList({
     }
   };
 
+  /**
+   * Saved a product to the user's saved products the database.
+   * @param {Object} product - Product object to save.
+   */
   const saveProduct = async (product) => {
+    // Delete product id from products ids that are saved. This enables us to
+    // mark the products that are saved on the home page.
     if (savedProductIds.has(product.product_id)) {
       setSavedProductIds((prev) => {
         const newSet = new Set(prev);
@@ -62,11 +73,13 @@ export default function ProductList({
       deleteProduct(product);
     } else {
       try {
+        // Track the product ids that are saved.
         setSavedProductIds((prev) => {
           const newSet = new Set(prev);
           newSet.add(product.product_id);
           return newSet;
         });
+
         fetch('../api/save-product', {
           method: 'POST',
           headers: {
@@ -76,12 +89,9 @@ export default function ProductList({
             user: user.email,
             ...product,
           }),
-        }).then(async (response) => {
-          const data = await response.json();
-          console.log('res save product: ', data);
         });
       } catch (error) {
-        console.error('error: ', error);
+        console.error(error);
       }
     }
   };
@@ -125,9 +135,9 @@ export default function ProductList({
               {productList &&
                 productList.map((product) => (
                   <div
-                    key={product.position}
+                    key={product.product_id}
                     href={product.link}
-                    className="group relative flex flex-col justify-between"
+                    className="posit group flex flex-col justify-between"
                   >
                     <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
                       <img

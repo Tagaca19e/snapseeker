@@ -1,4 +1,4 @@
-import { Fragment, useContext } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CameraIcon } from '@heroicons/react/20/solid';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -25,7 +25,7 @@ function classNames(...classes) {
 export default function Navbar() {
   const router = useRouter();
 
-  // Check for current page.
+  // Track which navigation item is currently selected.
   navigation = navigation.map((nav) => {
     if (nav.href === router.pathname) {
       nav.current = true;
@@ -38,28 +38,58 @@ export default function Navbar() {
   const { setSearchResults, setOpenCamera, setIsLoading } =
     useContext(AppContext);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [autoCompleteResults, setAutoCompleteResults] = useState([]);
+  const [hideAutoCompleteResults, setHideAutoCompleteResults] = useState(true);
+
   // TODO(etagaca): Implement real user image.
   const user = {
     ...useSession().data?.user,
     imageUrl: '/user.svg',
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  /**
+   * Searches for products based on the search term.
+   * @param {string} searchTerm - Term to search for.
+   */
+  const handleSearch = async (searchTerm) => {
     setIsLoading(true);
+    setSearchTerm(searchTerm);
+
+    // Hide autocomplete results but keep track of autocomplete results.
+    setHideAutoCompleteResults(true);
+
     const res = await fetch('/api/get-products', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: event.target.search.value,
-      }),
+      body: searchTerm,
     });
 
     const searchResults = await res.json();
     setSearchResults(searchResults.data.shopping_results);
     setIsLoading(false);
+  };
+
+  /**
+   * Displays matching autocomplete results based on the search term.
+   * @param {string} searchTerm - Term to search for.
+   */
+  const handleAutoComplete = async (searchTerm) => {
+    setSearchTerm(searchTerm);
+    if (!searchTerm) {
+      setHideAutoCompleteResults(true);
+      setAutoCompleteResults([]);
+      return;
+    }
+
+    console.log(searchTerm);
+    const res = await fetch('../api/autocomplete', {
+      method: 'POST',
+      body: searchTerm,
+    });
+
+    const data = await res.json();
+    setAutoCompleteResults(data.results);
+    setHideAutoCompleteResults(false);
   };
 
   return (
@@ -78,37 +108,63 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
-                <div className="flex w-full sm:max-w-xs">
-                  <label htmlFor="search" className="sr-only">
-                    Search
-                  </label>
-                  <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <MagnifyingGlassIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <form onSubmit={handleSubmit}>
+                <div className="relative w-full sm:max-w-xs">
+                  <div className="flex">
+                    <label htmlFor="search" className="sr-only">
+                      Search
+                    </label>
+                    {/* Search bar */}
+                    <div className="relative w-full">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <MagnifyingGlassIcon
+                          className="h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                      </div>
                       <input
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') {
+                            handleSearch(event.target.value);
+                          }
+                        }}
+                        onBlur={() => setHideAutoCompleteResults(true)}
+                        onFocus={() => setHideAutoCompleteResults(false)}
+                        value={searchTerm}
                         autoComplete="off"
+                        onChange={(event) => {
+                          handleAutoComplete(event.target.value);
+                        }}
                         name="search"
                         className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                         placeholder="Search"
                         type="search"
                       />
-                    </form>
+                    </div>
+                    <button
+                      type="button"
+                      className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                      onClick={() => setOpenCamera(true)}
+                    >
+                      <CameraIcon
+                        className="-ml-0.5 h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    onClick={() => setOpenCamera(true)}
-                  >
-                    <CameraIcon
-                      className="-ml-0.5 h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </button>
+                  {/* Autocomplete suggestions */}
+                  {autoCompleteResults.length > 0 &&
+                    !hideAutoCompleteResults && (
+                      <div className="absolute w-full gap-2 rounded-md border border-gray-300 bg-white sm:max-w-xs">
+                        {autoCompleteResults.map((result) => (
+                          <p
+                            onClick={() => handleSearch(result.value)}
+                            className="cursor-pointer px-2 pt-1"
+                          >
+                            {result.value}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                 </div>
               </div>
               <div className="relative z-10 flex items-center lg:hidden">

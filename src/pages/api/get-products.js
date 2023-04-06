@@ -12,7 +12,7 @@ export default async function getResults(req, res) {
       {
         engine: 'google_shopping',
         google_domain: 'google.com',
-        q: req.body.query,
+        q: req.body,
         location: 'United States',
       },
       (data) => {

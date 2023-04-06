@@ -30,12 +30,7 @@ export async function getServerSideProps(context) {
   // TODO(etagaca): Call better initialization results.
   const res = await fetch(`${process.env.DOMAIN}/api/get-products`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: 'coffee',
-    }),
+    body: 'coffee',
   });
   const data = await res.json();
 
