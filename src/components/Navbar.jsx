@@ -1,7 +1,7 @@
 import { Fragment, useContext, useState } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CameraIcon } from '@heroicons/react/20/solid';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { signOut, useSession } from 'next-auth/react';
 import { AppContext } from './AppContextProvider';
 import { useRouter } from 'next/router';
@@ -9,12 +9,10 @@ import { useRouter } from 'next/router';
 let navigation = [
   { name: 'Home', href: '/dashboard', current: false },
   { name: 'Saved', href: '/saved-items', current: false },
-  { name: 'Coupons', href: '#', current: false },
 ];
 
 const userNavigation = [
-  { name: 'Your Profile', href: '#', onClick: {} },
-  { name: 'Settings', href: '#', onClick: {} },
+  { name: 'Account', href: '/account', onClick: {} },
   { name: 'Sign out', href: '#', onClick: () => signOut() },
 ];
 
@@ -53,6 +51,7 @@ export default function Navbar() {
    * @param {string} searchTerm - Term to search for.
    */
   const handleSearch = async (searchTerm) => {
+    console.log('searchTerm: ', searchTerm);
     setIsLoading(true);
     setSearchTerm(searchTerm);
 
@@ -81,7 +80,6 @@ export default function Navbar() {
       return;
     }
 
-    console.log(searchTerm);
     const res = await fetch('../api/autocomplete', {
       method: 'POST',
       body: searchTerm,
@@ -127,12 +125,15 @@ export default function Navbar() {
                             handleSearch(event.target.value);
                           }
                         }}
-                        onBlur={() => setHideAutoCompleteResults(true)}
                         onFocus={() => setHideAutoCompleteResults(false)}
                         value={searchTerm}
                         autoComplete="off"
                         onChange={(event) => {
                           handleAutoComplete(event.target.value);
+                        }}
+                        onBlur={(event) => {
+                          console.log('onBlur', event);
+                          setHideAutoCompleteResults(true);
                         }}
                         name="search"
                         className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
@@ -157,6 +158,7 @@ export default function Navbar() {
                       <div className="absolute w-full gap-2 rounded-md border border-gray-300 bg-white sm:max-w-xs">
                         {autoCompleteResults.map((result) => (
                           <p
+                            key={result.value}
                             onClick={() => handleSearch(result.value)}
                             className="cursor-pointer px-2 pt-1"
                           >
@@ -179,14 +181,6 @@ export default function Navbar() {
                 </Disclosure.Button>
               </div>
               <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-                <button
-                  type="button"
-                  className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-4 flex-shrink-0">
                   <div>
@@ -288,13 +282,6 @@ export default function Navbar() {
                     {user.email}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  className="ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
               </div>
               <div className="mt-3 space-y-1 px-2">
                 {userNavigation.map((item) => (

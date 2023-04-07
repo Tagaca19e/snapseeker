@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import Layout from '../components/Layout';
-import ProductList from '@/components/ProductList';
+import Layout from '../components/Layout';import ProductList from '@/components/ProductList';
 import { getSession } from 'next-auth/react';
 import CameraUpload from '../components/CameraUpload';
 import ProductListLoader from '@/components/ProductListLoader';

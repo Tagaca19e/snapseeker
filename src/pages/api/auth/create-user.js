@@ -31,7 +31,6 @@ export default async function createUser(req, res) {
         .status(409)
         .json({ message: 'User already exists! Please login.' });
     }
-    // Validate the request method.
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
