@@ -1,6 +1,6 @@
-import PopUpContainer from './PopUpContainer';
 import { Dialog } from '@headlessui/react';
 import { BuildingStorefrontIcon } from '@heroicons/react/20/solid';
+import PopUpContainer from './PopUpContainer';
 
 export default function PopUp({
   isOpen,

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 
-export default function UserProfileSettings({ session, user }) {
+export default function ProfileSettings({ session, user }) {
   const fullName = user.name.split(' ');
   const [firstName, setFirstName] = useState(fullName[0]);
   const [lastName, setLastName] = useState(fullName[1]);
-
   const [updateNameMessage, setUpdateNameMessage] = useState('');
   const [updatePasswordMessage, setUpdatePasswordMessage] = useState('');
 
@@ -59,8 +58,6 @@ export default function UserProfileSettings({ session, user }) {
     setUpdatePasswordMessage(data.message);
   };
 
-  // TODO(etagaca): Think about how to update the name of the user once they
-  // update their name. Also fix the onBlur bug, and hashing for resettings the password via email.
   return (
     <>
       <div className="mx-auto max-w-md py-20 text-center">

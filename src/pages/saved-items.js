@@ -1,9 +1,9 @@
-import { React } from 'react';
-import Layout from '../components/Layout';
-import ProductList from '@/components/ProductList';
 import { getSession } from 'next-auth/react';
-import CameraUpload from '../components/CameraUpload';
-import ProductListLoader from '@/components/ProductListLoader';
+import { React } from 'react';
+import CameraUpload from '../components/dashboard/CameraUpload';
+import Layout from '../components/dashboard/Layout';
+import ProductList from '../components/dashboard/ProductList';
+import ProductListLoader from '../components/dashboard/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
 export default function SavedItems({ savedItems, savedItemIds, isMobileView }) {

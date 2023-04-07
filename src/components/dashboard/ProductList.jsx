@@ -1,7 +1,7 @@
-import { useEffect, useContext, useState } from 'react';
-import { AppContext } from './AppContextProvider';
 import { useSession } from 'next-auth/react';
-import PopUp from './PopUp';
+import { useContext, useEffect, useState } from 'react';
+import { AppContext } from '../AppContextProvider';
+import ProductComparisons from './ProductComparisons';
 
 export default function ProductList({
   products,
@@ -32,7 +32,6 @@ export default function ProductList({
   /**
    * Deletes a product from the user's saved products in the database.
    * @param {Object} product - Product object to delete.
-   * @see
    */
   const deleteProduct = async (product) => {
     try {
@@ -121,7 +120,7 @@ export default function ProductList({
   return (
     <>
       {/* Popup for showing product comparisons */}
-      <PopUp
+      <ProductComparisons
         popUpLoading={popUpLoading}
         isOpen={isOpen}
         setIsOpen={setIsOpen}

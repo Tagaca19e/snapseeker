@@ -1,13 +1,13 @@
-import Layout from '@/components/Layout';
-import UserProfileSettings from '@/components/UserProfileSettings';
 import clientPromise from 'lib/mongodb';
 import { getSession } from 'next-auth/react';
+import Layout from '../components/dashboard/Layout';
+import ProfileSettings from '../components/dashboard/ProfileSettings';
 
 export default function Profile({ session, user }) {
   return (
     <div>
       <Layout>
-        <UserProfileSettings session={session} user={user} />
+        <ProfileSettings session={session} user={user} />
       </Layout>
     </div>
   );

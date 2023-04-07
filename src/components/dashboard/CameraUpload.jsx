@@ -1,7 +1,7 @@
 import { Fragment, useRef, useState, useCallback, useContext } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { AppContext } from './AppContextProvider';
-import { uploadFile } from '../hooks/uploadFile';
+import { AppContext } from '../AppContextProvider';
+import { uploadFile } from '../../hooks/uploadFile';
 import Webcam from 'react-webcam';
 
 export default function CameraUpload({ isMobileView }) {

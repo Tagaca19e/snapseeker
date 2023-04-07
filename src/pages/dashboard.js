@@ -1,7 +1,9 @@
-import Layout from '../components/Layout';import ProductList from '@/components/ProductList';
 import { getSession } from 'next-auth/react';
-import CameraUpload from '../components/CameraUpload';
-import ProductListLoader from '@/components/ProductListLoader';
+import { useRouter } from 'next/router';
+import CameraUpload from '../components/dashboard/CameraUpload';
+import Layout from '../components/dashboard/Layout';
+import ProductList from '../components/dashboard/ProductList';
+import ProductListLoader from '../components/dashboard/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
 export default function Dashboard({
@@ -9,6 +11,10 @@ export default function Dashboard({
   isMobileView,
   userSavedItemIds,
 }) {
+  const router = useRouter();
+
+  // const { search } = router.query;
+
   return (
     <div>
       <Layout>
@@ -28,7 +34,7 @@ export async function getServerSideProps(context) {
   // TODO(etagaca): Call better initialization results.
   const res = await fetch(`${process.env.DOMAIN}/api/get-products`, {
     method: 'POST',
-    body: 'coffee',
+    body: 'starbucks coffee',
   });
   const data = await res.json();
 
