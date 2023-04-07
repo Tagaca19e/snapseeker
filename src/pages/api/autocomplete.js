@@ -12,6 +12,6 @@ export default async function (req, res) {
     res.status(200).json({ results: data.suggestions });
   };
 
-  // Show result as JSON
+  // Show result as JSON.
   search.json(params, callback);
 }

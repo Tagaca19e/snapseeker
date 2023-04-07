@@ -1,5 +1,6 @@
 import clientPromise from '/lib/mongodb';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 
 export default async function resetPassword(req, res) {
@@ -26,11 +27,13 @@ export default async function resetPassword(req, res) {
 
     const secret = process.env.JWT_SECRET + user[0].password;
     const payload = jwt.verify(req.body.token, secret);
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const result = await db
       .collection('users')
       .updateOne(
         { email: payload.email },
-        { $set: { password: req.body.password } }
+        { $set: { password: hashedPassword } }
       );
 
     if (result.acknowledged) {

@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from 'react';
+import { Fragment, useContext, useState, useEffect } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { MagnifyingGlassIcon, CameraIcon } from '@heroicons/react/20/solid';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -90,6 +90,26 @@ export default function Navbar() {
     setHideAutoCompleteResults(false);
   };
 
+  /* Closes autocomplete results when user clicks outside of the search bar or
+   * autocomplete results div. */
+  const closeAutoCompleteResults = (event) => {
+    if (
+      event.target.id !== 'autocomplete-result' &&
+      event.target.name !== 'search' &&
+      !hideAutoCompleteResults
+    ) {
+      setHideAutoCompleteResults(true);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeAutoCompleteResults);
+
+    return () => {
+      document.removeEventListener('click', closeAutoCompleteResults);
+    };
+  }, []);
+
   return (
     <Disclosure as="header" className="bg-white shadow">
       {({ open }) => (
@@ -131,10 +151,6 @@ export default function Navbar() {
                         onChange={(event) => {
                           handleAutoComplete(event.target.value);
                         }}
-                        onBlur={(event) => {
-                          console.log('onBlur', event);
-                          setHideAutoCompleteResults(true);
-                        }}
                         name="search"
                         className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                         placeholder="Search"
@@ -156,10 +172,14 @@ export default function Navbar() {
                   {autoCompleteResults.length > 0 &&
                     !hideAutoCompleteResults && (
                       <div className="absolute w-full gap-2 rounded-md border border-gray-300 bg-white sm:max-w-xs">
-                        {autoCompleteResults.map((result) => (
+                        {autoCompleteResults.map((result, idx) => (
                           <p
-                            key={result.value}
-                            onClick={() => handleSearch(result.value)}
+                            id="autocomplete-result"
+                            key={idx}
+                            onClick={() => {
+                              console.log('result.value: ', result.value);
+                              handleSearch(result.value);
+                            }}
                             className="cursor-pointer px-2 pt-1"
                           >
                             {result.value}
