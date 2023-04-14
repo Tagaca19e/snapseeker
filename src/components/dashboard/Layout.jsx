@@ -1,12 +1,12 @@
 import React from 'react';
-import Footer from './Footer';
 import Navbar from './Navbar';
+import Footer from '../Footer';
 
 export default function Layout({ children }) {
   return (
-    <div className="flex min-h-screen flex-col justify-between">
+    <div>
       <Navbar />
-      <main className="mx-auto w-full">{children}</main>
+      <main className="mx-auto">{children}</main>
       <Footer />
     </div>
   );

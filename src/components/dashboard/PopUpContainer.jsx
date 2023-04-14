@@ -1,5 +1,4 @@
-import React from 'react';
-import Raect, { Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 const PopUpContainer = ({ isOpen, closeModal, children }) => {
   return (

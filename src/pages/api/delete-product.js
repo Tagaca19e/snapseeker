@@ -1,21 +1,24 @@
 import clientPromise from '/lib/mongodb';
 
 export default async function saveData(req, res) {
-  const { item_title, user_id } = req.body;
+  const { product_id, user } = req.body;
 
   try {
-    // Use mongodb client to connect to the database.
     const client = await clientPromise;
     const db = client.db('snapseeker');
 
     await db.collection('save_items').deleteOne({
-      product_title: `${item_title}`,
-      user: `${user_id}`
-    })
+      user: user,
+      product_id: product_id,
+    });
 
-    res.status(201).json({ message: 'Item deleted' });
+    const updatedUserSavedProducts = await db
+      .collection('save_items')
+      .find({ user: user })
+      .toArray();
+
+    res.status(201).json({ message: 'Item deleted', updatedUserSavedProducts });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Item not deleted! Please try again.' });
   }
 }

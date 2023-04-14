@@ -25,7 +25,7 @@ export default NextAuth({
           const match = await bcrypt.compare(password, result?.password);
           if (match) {
             return {
-              name: result.first_name,
+              name: result.name,
               email: result.email,
             };
           }

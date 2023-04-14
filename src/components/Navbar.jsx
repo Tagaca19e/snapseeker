@@ -1,249 +1,120 @@
-import { Fragment, useContext } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { MagnifyingGlassIcon, CameraIcon } from '@heroicons/react/20/solid';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { signOut } from 'next-auth/react';
-import { AppContext } from './AppContextProvider';
-import { useSession } from 'next-auth/react';
-
-const navigation = [
-  { name: 'Home', href: '/dashboard', current: true },
-  { name: 'Saved', href: '/save', current: true },
-  { name: 'Coupons', href: '#', current: false },
-];
-const userNavigation = [
-  { name: 'Your Profile', href: '#', onClick: {} },
-  { name: 'Settings', href: '#', onClick: {} },
-  { name: 'Sign out', href: '#', onClick: () => signOut() },
-];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
+import { Dialog } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 export default function Navbar() {
-  const { setSearchResults, setOpenCamera, setIsLoading } =
-    useContext(AppContext);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // TODO(etagaca): Implement real user image.
-  const user = {
-    ...useSession().data?.user,
-    imageUrl: '/user.svg',
-  };
+  const router = useRouter();
+  let isLoginPage = false;
+  let isSignUpPage = false;
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsLoading(true);
-    const res = await fetch('/api/get-products', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: event.target.search.value,
-      }),
-    });
-
-    const searchResults = await res.json();
-    setSearchResults(searchResults.data.shopping_results);
-    setIsLoading(false);
-  };
+  // Check whether to display login or sign up button.
+  if (router.pathname === '/auth/login') {
+    isLoginPage = true;
+  } else if (router.pathname === '/auth/sign-up') {
+    isSignUpPage = true;
+  }
 
   return (
-    <Disclosure as="header" className="bg-white shadow">
-      {({ open }) => (
-        <>
-          <div className="mx-auto mb-1 max-w-7xl px-2 sm:px-4 lg:divide-y lg:divide-gray-200 lg:px-8">
-            <div className="relative flex h-16 justify-between">
-              <div className="relative z-10 flex px-2 lg:px-0">
-                <div className="flex flex-shrink-0 items-center">
-                  <img
-                    className="block h-12 w-auto"
-                    src="/logos/logo.svg"
-                    alt="Your Company"
-                  />
-                </div>
-              </div>
-              <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
-                <div className="flex w-full sm:max-w-xs">
-                  <label htmlFor="search" className="sr-only">
-                    Search
-                  </label>
-                  <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <MagnifyingGlassIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <form onSubmit={handleSubmit}>
-                      <input
-                        autoComplete="off"
-                        name="search"
-                        className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
-                        placeholder="Search"
-                        type="search"
-                      />
-                    </form>
-                  </div>
-                  <button
-                    type="button"
-                    className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    onClick={() => setOpenCamera(true)}
-                  >
-                    <CameraIcon
-                      className="-ml-0.5 h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </button>
-                </div>
-              </div>
-              <div className="relative z-10 flex items-center lg:hidden">
-                {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
-                  <span className="sr-only">Open menu</span>
-                  {open ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  )}
-                </Disclosure.Button>
-              </div>
-              <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-                <button
-                  type="button"
-                  className="flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+    <header className="border border-b-gray-300 bg-white">
+      <nav
+        className="mx-auto flex max-w-7xl items-center justify-between gap-x-6 p-3 lg:px-6"
+        aria-label="Global"
+      >
+        <div className="flex lg:flex-1">
+          <a href="/" className="-m-1.5 p-1.5">
+            <span className="sr-only">Snapeseeker</span>
+            <img
+              className="block h-12 w-auto"
+              src="/logos/logo.svg"
+              alt="Snapseeker"
+            />
+          </a>
+        </div>
 
-                {/* Profile dropdown */}
-                <Menu as="div" className="relative ml-4 flex-shrink-0">
-                  <div>
-                    <Menu.Button className="flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                      <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src={user.imageUrl}
-                        alt=""
-                      />
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      {userNavigation.map((item) => (
-                        <Menu.Item key={item.name}>
-                          {({ active }) => (
-                            <a
-                              href={item.href}
-                              className={classNames(
-                                active ? 'bg-gray-100' : '',
-                                'block py-2 px-4 text-sm text-gray-700'
-                              )}
-                              onClick={item.onClick}
-                            >
-                              {item.name}
-                            </a>
-                          )}
-                        </Menu.Item>
-                      ))}
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              </div>
-            </div>
-            <nav
-              className="hidden lg:flex lg:space-x-8 lg:py-2"
-              aria-label="Global"
+        <div className="flex flex-1 items-center justify-end gap-x-6">
+          {!isLoginPage && (
+            <a
+              href="/auth/login"
+              className="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900"
             >
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className={classNames(
-                    item.current
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
-                    'inline-flex items-center rounded-md py-2 px-3 text-sm font-medium'
-                  )}
-                  aria-current={item.current ? 'page' : undefined}
-                >
-                  {item.name}
-                </a>
-              ))}
-            </nav>
-          </div>
-
-          <Disclosure.Panel as="nav" className="lg:hidden" aria-label="Global">
-            <div className="space-y-1 px-2 pt-2 pb-3">
-              {navigation.map((item) => (
-                <Disclosure.Button
-                  key={item.name}
-                  as="a"
-                  href={item.href}
-                  className={classNames(
-                    item.current
-                      ? 'bg-gray-100 text-gray-900'
-                      : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900',
-                    'block rounded-md py-2 px-3 text-base font-medium'
-                  )}
-                  aria-current={item.current ? 'page' : undefined}
-                >
-                  {item.name}
-                </Disclosure.Button>
-              ))}
-            </div>
-            <div className="border-t border-gray-200 pt-4 pb-3">
-              <div className="flex items-center px-4">
-                <div className="flex-shrink-0">
+              Log in <span aria-hidden="true">→</span>
+            </a>
+          )}
+          {!isSignUpPage && (
+            <a
+              href="/auth/sign-up"
+              className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-transparent hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              Sign up
+            </a>
+          )}
+        </div>
+        <div className="flex lg:hidden">
+          <button
+            type="button"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <span className="sr-only">Open main menu</span>
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+      </nav>
+      <Dialog
+        as="div"
+        className="lg:hidden"
+        open={mobileMenuOpen}
+        onClose={setMobileMenuOpen}
+      >
+        <div className="fixed inset-0 z-10" />
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div className="flex items-center gap-x-6">
+            {!isSignUpPage && (
+              <>
+                <a href="/" className="-m-1.5 p-1.5">
+                  <span className="sr-only">Your Company</span>
                   <img
-                    className="h-10 w-10 rounded-full"
-                    src={user.imageUrl}
+                    className="h-8 w-auto"
+                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                     alt=""
                   />
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">
-                    {user.name}
-                  </div>
-                  <div className="text-sm font-medium text-gray-500">
-                    {user.email}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                </a>
+                <a
+                  href="/auth/sign-up"
+                  className="ml-auto rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-transparent hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-              </div>
-              <div className="mt-3 space-y-1 px-2">
-                {userNavigation.map((item) => (
-                  <Disclosure.Button
-                    key={item.name}
-                    as="a"
-                    href={item.href}
-                    className="block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                    onClick={item.onClick}
+                  Sign up
+                </a>
+              </>
+            )}
+            <button
+              type="button"
+              className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="sr-only">Close menu</span>
+              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="mt-6 flow-root">
+            <div className="-my-6 divide-y divide-gray-500/10">
+              {!isLoginPage && (
+                <div className="py-6">
+                  <a
+                    href="/auth/login"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
-                    {item.name}
-                  </Disclosure.Button>
-                ))}
-              </div>
+                    Log in
+                  </a>
+                </div>
+              )}
             </div>
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
+          </div>
+        </Dialog.Panel>
+      </Dialog>
+    </header>
   );
 }

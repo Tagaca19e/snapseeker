@@ -1,28 +1,21 @@
 import { getSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { React } from 'react';
 import CameraUpload from '../components/dashboard/CameraUpload';
 import Layout from '../components/dashboard/Layout';
 import ProductList from '../components/dashboard/ProductList';
 import ProductListLoader from '../components/dashboard/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
-export default function Dashboard({
-  products,
-  isMobileView,
-  userSavedItemIds,
-}) {
-  const router = useRouter();
-
-  // const { search } = router.query;
-
+export default function SavedItems({ savedItems, savedItemIds, isMobileView }) {
   return (
     <div>
       <Layout>
         <CameraUpload isMobileView={isMobileView} />
         <ProductListLoader />
         <ProductList
-          userSavedItemIds={userSavedItemIds}
-          products={products.data.shopping_results}
+          products={savedItems}
+          savedProductsPage={true}
+          userSavedItemIds={savedItemIds}
         />
       </Layout>
     </div>
@@ -31,12 +24,6 @@ export default function Dashboard({
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  // TODO(etagaca): Call better initialization results.
-  const res = await fetch(`${process.env.DOMAIN}/api/get-products`, {
-    method: 'POST',
-    body: 'starbucks coffee',
-  });
-  const data = await res.json();
 
   if (!session) {
     return {
@@ -47,18 +34,18 @@ export async function getServerSideProps(context) {
     };
   }
 
-  // Find all saved items from user.
   const client = await clientPromise;
   const db = client.db('snapseeker');
 
-  let userSavedItems = await db
+  const data = await db
     .collection('save_items')
     .find({ user: session.user.email })
     .limit(20)
     .toArray();
+  const savedItems = JSON.parse(JSON.stringify(data));
 
-  userSavedItems = JSON.parse(JSON.stringify(userSavedItems));
-  const userSavedItemIds = userSavedItems.map((item) => item.product_id);
+  // Keep track of item ids to mark items that are currently saved.
+  const savedItemIds = savedItems.map((item) => item.product_id);
 
   const userAgent = context.req.headers['user-agent'];
   const isMobileView = userAgent.match(
@@ -70,9 +57,9 @@ export async function getServerSideProps(context) {
   return {
     props: {
       session,
-      products: data,
+      savedItems,
+      savedItemIds,
       isMobileView,
-      userSavedItemIds: userSavedItemIds || [],
     },
   };
 }

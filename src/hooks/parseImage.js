@@ -22,12 +22,7 @@ export async function parseImage(imageUrl) {
       // Get products from product name.
       const productRes = await fetch('/api/get-products', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: imageResult.data.visual_matches[0].title,
-        }),
+        body: imageResult.data.visual_matches[0].title,
       });
 
       const products = await productRes.json();

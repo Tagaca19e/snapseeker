@@ -1,7 +1,6 @@
-import { React, useContext } from 'react';
-import { useEffect, useState } from 'react';
+import { React, useContext, useEffect, useState } from 'react';
 import ContentLoader from 'react-content-loader';
-import { AppContext } from './AppContextProvider';
+import { AppContext } from '../AppContextProvider';
 
 const ListLoaderCol4 = () => (
   <div className="hidden lg:block">
