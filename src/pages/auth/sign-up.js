@@ -76,7 +76,7 @@ export default function SignUp() {
 
   return (
     <Layout>
-      <div className="m-auto flex justify-center">
+      <div className="m-6 flex justify-center sm:m-auto">
         <div className="m-auto bg-white py-8 px-8 shadow only:max-w-xl sm:rounded-lg sm:px-10">
           <form onSubmit={handleSignUp}>
             <div className="grid grid-cols-2 gap-4">

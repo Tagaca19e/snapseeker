@@ -35,7 +35,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mx-auto mt-16 flex w-full max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
-                <div className="max-w-lg flex-none">
+                <div className="max-w-lg flex-none w-full">
                   <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
                     <img
                       src="/hero.png"

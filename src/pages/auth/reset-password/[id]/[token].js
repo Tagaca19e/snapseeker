@@ -42,7 +42,7 @@ export default function token({ expiredToken }) {
   };
 
   return (
-    <div className="m-auto flex min-h-screen justify-center">
+    <div className="m-6 flex min-h-screen justify-center sm:m-auto">
       {!expiredToken ? (
         <div className="m-auto w-full max-w-md bg-white py-8 px-8 shadow  sm:rounded-lg sm:px-10">
           <form onSubmit={handleSubmit}>

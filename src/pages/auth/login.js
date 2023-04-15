@@ -47,7 +47,7 @@ export default function Login() {
 
   return (
     <Layout>
-      <div className="m-auto flex justify-center">
+      <div className="m-6 flex justify-center sm:m-auto">
         <div className="m-auto w-full max-w-md bg-white py-8 px-8 shadow  sm:rounded-lg sm:px-10">
           <form onSubmit={handleLogin}>
             <h1 className="text-center text-3xl font-bold">

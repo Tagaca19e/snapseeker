@@ -27,8 +27,8 @@ export default function forgot() {
 
   return (
     <Layout>
-      <div className="m-auto flex justify-center">
-        <div className="m-auto w-full max-w-md bg-white py-8 px-8 shadow  sm:rounded-lg sm:px-10">
+      <div className="m-6 sm:m-auto flex justify-center">
+        <div className="m-auto w-full max-w-md bg-white py-8 px-8 shadow  rounded-lg sm:px-10">
           <form onSubmit={handleSubmit}>
             <div className="text-center">
               <h1 className="text-center text-3xl font-bold">

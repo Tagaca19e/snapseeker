@@ -59,7 +59,7 @@ export default function ProfileSettings({ session, user }) {
   };
 
   return (
-    <>
+    <div className="m-6 h-[80vh]">
       <div className="mx-auto max-w-md py-20 text-center">
         <h1 className="text-5xl font-extrabold">Account settings</h1>
         <p className="mt-4 text-gray-600">
@@ -159,6 +159,6 @@ export default function ProfileSettings({ session, user }) {
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }
