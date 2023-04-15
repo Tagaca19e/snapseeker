@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 import Layout from '../../components/Layout';
 
@@ -21,9 +22,6 @@ export default function forgot() {
       } else {
         setEmailError(true);
       }
-      console.log(response);
-      let data = await response.json();
-      console.log(data);
     });
   };
 
@@ -79,12 +77,12 @@ export default function forgot() {
                 <div className="mt-4 flex items-center justify-between">
                   <div className="text-sm leading-5 text-gray-700">
                     Already have an account?{' '}
-                    <a
+                    <Link
                       className="text-primary-primary hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
                       href="/auth/login"
                     >
                       Log in.
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </>

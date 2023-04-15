@@ -1,4 +1,5 @@
 import { getSession, signIn } from 'next-auth/react';
+import Link from 'next/link';
 import Router from 'next/router';
 import React from 'react';
 import Layout from '../../components/Layout';
@@ -92,7 +93,7 @@ export default function Login() {
             </div>
 
             <div className="mt-4 text-sm font-semibold text-primary">
-              <a href="/auth/forgot">Forgot your password?</a>
+              <Link href="/auth/forgot">Forgot your password?</Link>
             </div>
 
             <div className="mt-4">
@@ -115,12 +116,12 @@ export default function Login() {
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm leading-5 text-gray-700">
                 Already have an account?{' '}
-                <a
+                <Link
                   className="text-primary-primary hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
                   href="/auth/sign-up"
                 >
                   Sign up.
-                </a>
+                </Link>
               </div>
             </div>
           </form>

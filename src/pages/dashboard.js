@@ -1,5 +1,5 @@
+import SerpApi from 'google-search-results-nodejs';
 import { getSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import CameraUpload from '../components/dashboard/CameraUpload';
 import Layout from '../components/dashboard/Layout';
 import ProductList from '../components/dashboard/ProductList';
@@ -11,10 +11,6 @@ export default function Dashboard({
   isMobileView,
   userSavedItemIds,
 }) {
-  const router = useRouter();
-
-  // const { search } = router.query;
-
   return (
     <div>
       <Layout>
@@ -22,7 +18,7 @@ export default function Dashboard({
         <ProductListLoader />
         <ProductList
           userSavedItemIds={userSavedItemIds}
-          products={products.data.shopping_results}
+          products={products.shopping_results}
         />
       </Layout>
     </div>
@@ -31,12 +27,6 @@ export default function Dashboard({
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  // TODO(etagaca): Call better initialization results.
-  const res = await fetch(`${process.env.DOMAIN}/api/get-products`, {
-    method: 'POST',
-    body: 'starbucks coffee',
-  });
-  const data = await res.json();
 
   if (!session) {
     return {
@@ -67,10 +57,31 @@ export async function getServerSideProps(context) {
     ? true
     : false;
 
+  const search = new SerpApi.GoogleSearch(process.env.SERP_API_KEY);
+  const productsPromise = new Promise((resolve, reject) => {
+    search.json(
+      {
+        engine: 'google_shopping',
+        google_domain: 'google.com',
+        q: 'starbucks coffee',
+        location: 'United States',
+      },
+      (data) => {
+        if (data) {
+          resolve(data);
+        } else {
+          reject('No data');
+        }
+      }
+    );
+  });
+
+  const products = await productsPromise;
+
   return {
     props: {
       session,
-      products: data,
+      products: products || {},
       isMobileView,
       userSavedItemIds: userSavedItemIds || [],
     },

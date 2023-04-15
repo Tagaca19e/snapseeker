@@ -10,6 +10,9 @@ module.exports = {
         error_light: '#f5eaea',
         error: '#b61919',
       },
+      animation: {
+        'spin-slow': 'spin 2s linear infinite',
+      },
     },
   },
   plugins: [

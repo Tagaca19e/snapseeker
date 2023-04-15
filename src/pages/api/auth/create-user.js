@@ -1,6 +1,6 @@
-import clientPromise from '/lib/mongodb';
 import bcrypt from 'bcrypt';
 import passwordValidation from 'lib/passwordValidation';
+import clientPromise from '/lib/mongodb';
 
 export default async function createUser(req, res) {
   const { email, password, first_name, last_name } = req.body;
@@ -43,7 +43,6 @@ export default async function createUser(req, res) {
 
     res.status(201).json({ message: 'User created! You may now login.' });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'User not created! Please try again.' });
   }
 }

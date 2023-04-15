@@ -2,6 +2,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { CameraIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { AppContext } from '../AppContextProvider';
@@ -51,7 +52,6 @@ export default function Navbar() {
    * @param {string} searchTerm - Term to search for.
    */
   const handleSearch = async (searchTerm) => {
-    console.log('searchTerm: ', searchTerm);
     setIsLoading(true);
     setSearchTerm(searchTerm);
 
@@ -93,7 +93,6 @@ export default function Navbar() {
   /* Closes autocomplete results when user clicks outside of the search bar or
    * autocomplete results div. */
   const closeAutoCompleteResults = (event) => {
-    console.log('event', event.target);
     if (
       event.target.id !== 'autocomplete-result' &&
       event.target.name !== 'search' &&
@@ -118,11 +117,13 @@ export default function Navbar() {
             <div className="relative flex h-16 justify-between">
               <div className="relative z-10 flex px-2 lg:px-0">
                 <div className="flex flex-shrink-0 items-center">
-                  <img
-                    className="block h-12 w-auto"
-                    src="/logos/logo.svg"
-                    alt="Snapseeker"
-                  />
+                  <Link href="/">
+                    <img
+                      className="w-autof block h-12 animate-spin-slow"
+                      src="/logos/logo.svg"
+                      alt="Snapseeker"
+                    />
+                  </Link>
                 </div>
               </div>
               <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
@@ -177,7 +178,6 @@ export default function Navbar() {
                             id="autocomplete-result"
                             key={idx}
                             onClick={() => {
-                              console.log('result.value: ', result.value);
                               handleSearch(result.value);
                             }}
                             className="cursor-pointer px-2 pt-1"
@@ -226,7 +226,7 @@ export default function Navbar() {
                       {userNavigation.map((item) => (
                         <Menu.Item key={item.name}>
                           {({ active }) => (
-                            <a
+                            <Link
                               href={item.href}
                               className={classNames(
                                 active ? 'bg-gray-100' : '',
@@ -235,7 +235,7 @@ export default function Navbar() {
                               onClick={item.onClick}
                             >
                               {item.name}
-                            </a>
+                            </Link>
                           )}
                         </Menu.Item>
                       ))}
@@ -249,7 +249,7 @@ export default function Navbar() {
               aria-label="Global"
             >
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className={classNames(
@@ -261,7 +261,7 @@ export default function Navbar() {
                   aria-current={item.current ? 'page' : undefined}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>

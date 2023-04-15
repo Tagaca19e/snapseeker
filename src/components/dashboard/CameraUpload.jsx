@@ -1,8 +1,8 @@
-import { Fragment, useRef, useState, useCallback, useContext } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { AppContext } from '../AppContextProvider';
-import { uploadFile } from '../../hooks/uploadFile';
+import { Fragment, useCallback, useContext, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
+import { uploadFile } from '../../hooks/uploadFile';
+import { AppContext } from '../AppContextProvider';
 
 export default function CameraUpload({ isMobileView }) {
   const webCamHeigth = isMobileView ? 200 : 500;

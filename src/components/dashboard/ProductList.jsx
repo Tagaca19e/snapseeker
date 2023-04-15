@@ -1,4 +1,5 @@
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../AppContextProvider';
 import ProductComparisons from './ProductComparisons';
@@ -148,9 +149,9 @@ export default function ProductList({
                     <div className="mt-4 flex justify-between">
                       <div>
                         <h3 className="text-sm text-gray-700">
-                          <a href={product.link} target="_blank">
+                          <Link href={product.link} target="_blank">
                             {product.title}
-                          </a>
+                          </Link>
                         </h3>
                         <p className="mt-1 text-sm text-gray-500">
                           {product.rating}

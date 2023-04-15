@@ -28,8 +28,7 @@ export default async function forgotPassword(req, res) {
 
   // Create a token that expires in 10 minutes.
   const token = jwt.sign(payload, secret, { expiresIn: '10m' });
-  // TODO(etagaca): Change this to the production domain.
-  const url = `http://localhost:3000/auth/reset-password/${user._id}/${token}`;
+  const url = `http://snapseeker.vercel.app/auth/reset-password/${user._id}/${token}`;
 
   // Use node mailer to send the email.
   const transporter = nodemailer.createTransport(

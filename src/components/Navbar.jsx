@@ -1,5 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -18,38 +19,38 @@ export default function Navbar() {
   }
 
   return (
-    <header className="border border-b-gray-300 bg-white">
+    <header className="bg-white">
       <nav
         className="mx-auto flex max-w-7xl items-center justify-between gap-x-6 p-3 lg:px-6"
         aria-label="Global"
       >
         <div className="flex lg:flex-1">
-          <a href="/" className="-m-1.5 p-1.5">
+          <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Snapeseeker</span>
             <img
-              className="block h-12 w-auto"
+              className="block h-12 w-auto animate-spin-slow"
               src="/logos/logo.svg"
               alt="Snapseeker"
             />
-          </a>
+          </Link>
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-x-6">
           {!isLoginPage && (
-            <a
+            <Link
               href="/auth/login"
-              className="hidden lg:block lg:text-sm lg:font-semibold lg:leading-6 lg:text-gray-900"
+              className="rounded-md border border-black px-3 py-2 text-sm font-semibold transition duration-200 hover:border-none hover:bg-primary hover:text-white"
             >
               Log in <span aria-hidden="true">→</span>
-            </a>
+            </Link>
           )}
           {!isSignUpPage && (
-            <a
+            <Link
               href="/auth/sign-up"
-              className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-transparent hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="rounded-md border bg-primary px-3 py-2 text-sm font-semibold text-white transition duration-200 hover:border-black hover:bg-transparent hover:text-black"
             >
               Sign up
-            </a>
+            </Link>
           )}
         </div>
         <div className="flex lg:hidden">
@@ -74,20 +75,20 @@ export default function Navbar() {
           <div className="flex items-center gap-x-6">
             {!isSignUpPage && (
               <>
-                <a href="/" className="-m-1.5 p-1.5">
-                  <span className="sr-only">Your Company</span>
+                <Link href="/" className="-m-1.5 p-1.5">
+                  <span className="sr-only">Snapseeker</span>
                   <img
-                    className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    alt=""
+                    className="h-8 w-auto animate-spin-slow"
+                    src="/logos/logo.svg"
+                    alt="Snapseeker"
                   />
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/auth/sign-up"
                   className="ml-auto rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-transparent hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   Sign up
-                </a>
+                </Link>
               </>
             )}
             <button
@@ -103,12 +104,12 @@ export default function Navbar() {
             <div className="-my-6 divide-y divide-gray-500/10">
               {!isLoginPage && (
                 <div className="py-6">
-                  <a
+                  <Link
                     href="/auth/login"
-                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="rounded-md border border-black px-3 py-2 text-sm font-semibold transition duration-200 hover:border-none hover:bg-primary hover:text-white"
                   >
                     Log in
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>

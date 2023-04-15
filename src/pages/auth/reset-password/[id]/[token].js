@@ -1,5 +1,9 @@
-import React from 'react';
+import jwt from 'jsonwebtoken';
+import { ObjectId } from 'mongodb';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+import React from 'react';
+import clientPromise from '/lib/mongodb';
 
 export default function token({ expiredToken }) {
   const [passwordError, setPasswordError] = React.useState(false);
@@ -31,7 +35,6 @@ export default function token({ expiredToken }) {
         new_password: newPassword,
       }),
     }).then(async (response) => {
-      console.log(await response.text());
       if (response.status === 200) {
         setPasswordSuccess(true);
       }
@@ -95,9 +98,9 @@ export default function token({ expiredToken }) {
             {passwordSuccess && (
               <p className="mt-2 text-sm text-primary">
                 Password success! You may now{' '}
-                <a href="/auth/login" className="underline">
+                <Link href="/auth/login" className="underline">
                   log in.
-                </a>
+                </Link>
               </p>
             )}
 
@@ -115,12 +118,12 @@ export default function token({ expiredToken }) {
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm leading-5 text-gray-700">
                 Don't have an account?{' '}
-                <a
+                <Link
                   className="text-primary-primary hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
                   href="/auth/sign-up"
                 >
                   Register.
-                </a>
+                </Link>
               </div>
             </div>
           </form>
@@ -128,9 +131,9 @@ export default function token({ expiredToken }) {
       ) : (
         <p>
           Link expired. Please request a new password reset link.{' '}
-          <a href="/auth/forgot" className="underline">
+          <Link href="/auth/forgot" className="underline">
             Forgot password.
-          </a>
+          </Link>
         </p>
       )}
     </div>
@@ -140,23 +143,22 @@ export default function token({ expiredToken }) {
 export async function getServerSideProps(context) {
   // Validate token first before rendering the sent reset password page.
   const { id, token } = context.query;
-  const expiredToken = await fetch(
-    `${process.env.DOMAIN}/api/auth/validate-token`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: id,
-        token: token,
-      }),
-    }
-  ).then(async (response) => {
-    return response.status === 401 ? true : false;
-  });
+  const client = await clientPromise;
+  const db = client.db('snapseeker');
+
+  // Find the user in the database.
+  let user = await db.collection('users').findOne({ _id: ObjectId(id) });
+
+  user = JSON.parse(JSON.stringify(user));
+
+  let expiredToken = true;
+  const secret = process.env.JWT_SECRET + user.password;
+  try {
+    jwt.verify(token, secret);
+    expiredToken = false;
+  } catch (error) {}
 
   return {
-    props: { expiredToken: expiredToken },
+    props: { expiredToken },
   };
 }

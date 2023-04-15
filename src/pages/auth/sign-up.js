@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Router from 'next/router';
 import React, { useEffect } from 'react';
 import Layout from '../../components/Layout';
@@ -183,12 +184,12 @@ export default function SignUp() {
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm leading-5 text-gray-700">
                 Already have an account?{' '}
-                <a
+                <Link
                   className="text-primary-primary hover:text-primary-base font-medium underline transition duration-150 ease-in-out focus:underline focus:outline-none"
                   href="/auth/login"
                 >
                   Log in.
-                </a>
+                </Link>
               </div>
             </div>
           </form>

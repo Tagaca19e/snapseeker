@@ -1,5 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import { BuildingStorefrontIcon } from '@heroicons/react/20/solid';
+import Link from 'next/link';
 import PopUpContainer from './PopUpContainer';
 
 export default function PopUp({
@@ -59,7 +60,7 @@ export default function PopUp({
                   key={company.position}
                   className="cursor-pointer  border-b border-gray-200 py-3"
                 >
-                  <a
+                  <Link
                     href={company.link}
                     target="blank"
                     className="flex justify-between"
@@ -69,7 +70,7 @@ export default function PopUp({
                       <h3>{company.name}</h3>
                     </span>
                     <h6>{company.total_price}</h6>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
