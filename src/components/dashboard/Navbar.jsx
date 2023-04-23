@@ -58,7 +58,7 @@ export default function Navbar() {
     // Hide autocomplete results but keep track of autocomplete results.
     setHideAutoCompleteResults(true);
 
-    const res = await fetch('/api/get-products', {
+    const res = await fetch('/api/list-products', {
       method: 'POST',
       body: searchTerm,
     });
@@ -86,7 +86,8 @@ export default function Navbar() {
     });
 
     const data = await res.json();
-    setAutoCompleteResults(data.results);
+    console.log('data: ', data);
+    setAutoCompleteResults(data.relatedSearches || []);
     setHideAutoCompleteResults(false);
   };
 
@@ -94,9 +95,10 @@ export default function Navbar() {
    * autocomplete results div. */
   const closeAutoCompleteResults = (event) => {
     if (
-      event.target.id !== 'autocomplete-result' &&
-      event.target.name !== 'search' &&
-      !hideAutoCompleteResults
+      (event.target.id !== 'autocomplete-result' &&
+        event.target.name !== 'search' &&
+        !hideAutoCompleteResults) ||
+      (!event.target.id && !event.target.name)
     ) {
       setHideAutoCompleteResults(true);
     }
@@ -119,76 +121,81 @@ export default function Navbar() {
                 <div className="flex flex-shrink-0 items-center">
                   <Link href="/">
                     <img
-                      className="w-autof block h-12 animate-spin-slow"
+                      className="w-autof block h-12"
                       src="/logos/logo.svg"
                       alt="Snapseeker"
                     />
                   </Link>
                 </div>
               </div>
-              <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
-                <div className="relative w-full sm:max-w-xs">
-                  <div className="flex">
-                    <label htmlFor="search" className="sr-only">
-                      Search
-                    </label>
-                    {/* Search bar */}
-                    <div className="relative w-full">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <MagnifyingGlassIcon
-                          className="h-5 w-5 text-gray-400"
-                          aria-hidden="true"
+
+              {router.pathname === '/dashboard' && (
+                <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
+                  <div className="relative w-full sm:max-w-xs">
+                    <div className="flex">
+                      <label htmlFor="search" className="sr-only">
+                        Search
+                      </label>
+                      {/* Search bar */}
+                      <div className="relative w-full">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                          <MagnifyingGlassIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <input
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              handleSearch(event.target.value);
+                            }
+                          }}
+                          onFocus={() => setHideAutoCompleteResults(false)}
+                          value={searchTerm}
+                          autoComplete="off"
+                          onChange={(event) => {
+                            handleAutoComplete(event.target.value);
+                          }}
+                          name="search"
+                          className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                          placeholder="Search"
+                          type="search"
                         />
                       </div>
-                      <input
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter') {
-                            handleSearch(event.target.value);
-                          }
-                        }}
-                        onFocus={() => setHideAutoCompleteResults(false)}
-                        value={searchTerm}
-                        autoComplete="off"
-                        onChange={(event) => {
-                          handleAutoComplete(event.target.value);
-                        }}
-                        name="search"
-                        className="block w-full rounded-l-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
-                        placeholder="Search"
-                        type="search"
-                      />
+                      <button
+                        type="button"
+                        className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        onClick={() => setOpenCamera(true)}
+                      >
+                        <CameraIcon
+                          className="-ml-0.5 h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                      onClick={() => setOpenCamera(true)}
-                    >
-                      <CameraIcon
-                        className="-ml-0.5 h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </button>
+                    {/* Autocomplete suggestions */}
+                    {autoCompleteResults.length > 0 &&
+                      !hideAutoCompleteResults && (
+                        <div className="absolute z-10 w-full gap-2 rounded-md border border-gray-300 bg-white sm:max-w-xs">
+                          {autoCompleteResults.length &&
+                            autoCompleteResults.map((suggestedSearch) => (
+                              <p
+                                id="autocomplete-result"
+                                key={suggestedSearch.text}
+                                onClick={() => {
+                                  handleSearch(suggestedSearch.text);
+                                }}
+                                className="cursor-pointer px-2 pt-1"
+                              >
+                                {suggestedSearch.text}
+                              </p>
+                            ))}
+                        </div>
+                      )}
                   </div>
-                  {/* Autocomplete suggestions */}
-                  {autoCompleteResults.length > 0 &&
-                    !hideAutoCompleteResults && (
-                      <div className="absolute w-full gap-2 rounded-md border border-gray-300 bg-white sm:max-w-xs">
-                        {autoCompleteResults.map((result, idx) => (
-                          <p
-                            id="autocomplete-result"
-                            key={idx}
-                            onClick={() => {
-                              handleSearch(result.value);
-                            }}
-                            className="cursor-pointer px-2 pt-1"
-                          >
-                            {result.value}
-                          </p>
-                        ))}
-                      </div>
-                    )}
                 </div>
-              </div>
+              )}
+
               <div className="relative z-10 flex items-center lg:hidden">
                 {/* Mobile menu button */}
                 <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
@@ -200,6 +207,7 @@ export default function Navbar() {
                   )}
                 </Disclosure.Button>
               </div>
+
               <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-4 flex-shrink-0">

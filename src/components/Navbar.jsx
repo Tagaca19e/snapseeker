@@ -23,7 +23,7 @@ export default function Navbar() {
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Snapeseeker</span>
             <img
-              className="block h-12 w-auto animate-spin-slow"
+              className="block h-12 w-auto"
               src="/logos/logo.svg"
               alt="Snapseeker"
             />

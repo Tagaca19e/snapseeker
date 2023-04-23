@@ -1,14 +1,17 @@
+import { BuildingStorefrontIcon, StarIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../AppContextProvider';
 import ProductComparisons from './ProductComparisons';
+import ProductModal from './ProductModal/Modal';
 
 export default function ProductList({
   products,
   savedProductsPage = false,
   userSavedItemIds = [],
 }) {
+  const router = useRouter();
   const { searchResults, isLoading } = useContext(AppContext);
 
   // Set initial state to the products from server-side rendering.
@@ -118,6 +121,33 @@ export default function ProductList({
     setPopUpLoading(false);
   };
 
+  const [open, setOpen] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [productDetails, setProductDetails] = useState(null);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+
+  const onSelectProduct = async (productId, productLink) => {
+    setModalLoading(true);
+    setSelectedProductId(productId);
+    setOpen(true);
+
+    const response = await fetch(
+      `../api/get-product-details?product_id=${productId}`,
+      {
+        method: 'GET',
+      }
+    );
+
+    const data = await response.json();
+    setModalLoading(false);
+    setProductDetails({ ...data.productDetails, product_link: productLink });
+    console.log('data: ', data);
+  };
+
+  const onSetModal = (isOpen) => {
+    setOpen(isOpen);
+  };
+
   return (
     <>
       {/* Popup for showing product comparisons */}
@@ -128,42 +158,67 @@ export default function ProductList({
         comparisons={comparisons}
       />
 
+      {router.pathname === '/dashboard' && (
+        <ProductModal
+          selectedProductId={selectedProductId}
+          productDetails={productDetails}
+          open={open}
+          modalLoading={modalLoading}
+          onSetModal={onSetModal}
+        />
+      )}
+
       <div className="bg-white">
         {!isLoading && (
-          <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-2">
+          <div className="mx-auto max-w-2xl py-10 px-4 sm:px-6 lg:max-w-7xl lg:px-2">
             <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
               {productList &&
                 productList.map((product) => (
                   <div
                     key={product.product_id}
-                    href={product.link}
+                    // href={product.link}
                     className="posit group flex flex-col justify-between"
                   >
-                    <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
+                    <div
+                      className="cursor-pointer"
+                      onClick={() =>
+                        onSelectProduct(product.product_id, product.link)
+                      }
+                    >
                       <img
                         src={product.thumbnail}
                         alt={product.title}
-                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                        className="mb-3 h-[300px] w-full rounded-md border border-black object-cover object-center p-3"
                       />
-                    </div>
-                    <div className="mt-4 flex justify-between">
-                      <div>
+
+                      {/* Product infomrmation */}
+                      <div className="flex flex-col gap-2">
                         <h3 className="text-sm text-gray-700">
-                          <Link href={product.link} target="_blank">
-                            {product.title}
-                          </Link>
+                          {product.title}
                         </h3>
-                        <p className="mt-1 text-sm text-gray-500">
-                          {product.rating}
+
+                        <div>
+                          <p className="mb-2 text-sm font-medium">
+                            {product.price}
+                          </p>
+                          <span className="flex">
+                            <BuildingStorefrontIcon className="mr-2 h-5 text-black" />
+                            <p className="text-sm font-bold">
+                              {product.source}
+                            </p>
+                          </span>
+                        </div>
+
+                        <p className="mt-1 flex items-center text-sm text-gray-500">
+                          <StarIcon className="h-5 text-black" />
+                          {product.rating}: {product.reviews} Reviews
                         </p>
+                        {product.id}
                       </div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {product.price}
-                      </p>
                     </div>
-                    <div class="my-1 flex flex-wrap gap-2 py-6 text-center">
+                    <div className="my-1 flex flex-wrap gap-2 py-2 text-center">
                       <button
-                        class={`border-gray mr-3 rounded border py-0.5 px-4 font-bold ${
+                        className={`border-gray mr-3 rounded border py-0.5 px-4 font-bold ${
                           savedProductIds.has(product.product_id)
                             ? 'bg-primary text-white'
                             : 'text-gray-600'
@@ -183,7 +238,7 @@ export default function ProductList({
                       {product?.serpapi_product_api_comparisons && (
                         <button
                           onClick={() => handleCompare(product?.product_id)}
-                          class="mr-3 rounded bg-[#3bb77e] 
+                          className="mr-3 rounded bg-[#3bb77e] 
                     py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
                         >
                           compare prices

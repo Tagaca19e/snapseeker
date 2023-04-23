@@ -20,7 +20,7 @@ export async function parseImage(imageUrl) {
     if (res.status === 200) {
       const imageResult = await res.json();
       // Get products from product name.
-      const productRes = await fetch('/api/get-products', {
+      const productRes = await fetch('/api/list-products', {
         method: 'POST',
         body: imageResult.data.visual_matches[0].title,
       });
