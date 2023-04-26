@@ -1,7 +1,11 @@
 import { Dialog, Tab, Transition } from '@headlessui/react';
 import {
-  ArrowUturnLeftIcon, PauseCircleIcon, PlayCircleIcon, RocketLaunchIcon, StarIcon,
-  XMarkIcon
+  ArrowUturnLeftIcon,
+  PauseCircleIcon,
+  PlayCircleIcon,
+  RocketLaunchIcon,
+  StarIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { Fragment, useState } from 'react';
 import ProductDetailsLoader from '../loaders/ProductDetails';
@@ -36,7 +40,6 @@ export default function ProductModal({
 
     // Register an event listener to handle the end of the speech
     msg.addEventListener('end', () => {
-      console.log('speech finished');
       setSpeakSpeechSynthesisSpeaking(false);
     });
 
@@ -44,19 +47,16 @@ export default function ProductModal({
   }
 
   function pauseSpeechSynthesis() {
-    console.log('pause');
     window.speechSynthesis.pause();
     setSpeakSpeechSynthesisSpeaking(false);
   }
 
   function restartSpeechSynthesis(text) {
-    console.log('restart');
     window.speechSynthesis.cancel();
     speakSpeechSynthesis(text);
   }
 
   function closeSpeechSynthesis() {
-    console.log('close');
     window.speechSynthesis.cancel();
     setSpeakSpeechSynthesisSpeaking(false);
   }
@@ -110,214 +110,228 @@ export default function ProductModal({
                       <span className="sr-only">Close</span>
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
+                    {productDetails?.error ? (
+                      <div className="m-auto flex items-center justify-between">
+                        <p>We couldn't find any details about the product :(</p>
+                        <a
+                          href={productDetails?.product_link}
+                          target="_blank"
+                          className="ml-4 w-max rounded-lg bg-primary p-3 text-sm text-white"
+                        >
+                          Go to the store
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
+                        <div className="sm:col-span-4 lg:col-span-5">
+                          {/* Image gallery */}
+                          <Tab.Group as="div" className="flex flex-col-reverse">
+                            {/* Image selector */}
+                            <div className="mx-auto mt-6 w-full max-w-2xl lg:max-w-none">
+                              <Tab.List className="grid grid-cols-4 gap-6">
+                                {productDetails?.product_results?.media.map(
+                                  (image) => (
+                                    <Tab
+                                      key={image.link}
+                                      className="relative flex h-24 cursor-pointer items-center justify-center rounded-md"
+                                    >
+                                      {({ selected }) => (
+                                        <>
+                                          <span className="sr-only">
+                                            Product Image
+                                          </span>
+                                          <span className="absolute inset-0 overflow-hidden rounded-md">
+                                            <img
+                                              src={image.link}
+                                              alt="Product Image"
+                                              className="h-full w-full object-cover object-center"
+                                            />
+                                          </span>
+                                          <span
+                                            className={classNames(
+                                              selected
+                                                ? 'ring-primary'
+                                                : 'ring-transparent',
+                                              'pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2'
+                                            )}
+                                            aria-hidden="true"
+                                          />
+                                        </>
+                                      )}
+                                    </Tab>
+                                  )
+                                )}
+                              </Tab.List>
+                            </div>
 
-                    <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
-                      <div className="sm:col-span-4 lg:col-span-5">
-                        {/* Image gallery */}
-                        <Tab.Group as="div" className="flex flex-col-reverse">
-                          {/* Image selector */}
-                          <div className="mx-auto mt-6 w-full max-w-2xl lg:max-w-none">
-                            <Tab.List className="grid grid-cols-4 gap-6">
+                            <Tab.Panels className="aspect-h-1 aspect-w-1 w-full">
                               {productDetails?.product_results?.media.map(
                                 (image) => (
-                                  <Tab
-                                    key={image.link}
-                                    className="relative flex h-24 cursor-pointer items-center justify-center rounded-md"
-                                  >
-                                    {({ selected }) => (
-                                      <>
-                                        <span className="sr-only">
-                                          Product Image
-                                        </span>
-                                        <span className="absolute inset-0 overflow-hidden rounded-md">
-                                          <img
-                                            src={image.link}
-                                            alt="Product Image"
-                                            className="h-full w-full object-cover object-center"
-                                          />
-                                        </span>
-                                        <span
-                                          className={classNames(
-                                            selected
-                                              ? 'ring-primary'
-                                              : 'ring-transparent',
-                                            'pointer-events-none absolute inset-0 rounded-md ring-2 ring-offset-2'
-                                          )}
-                                          aria-hidden="true"
-                                        />
-                                      </>
-                                    )}
-                                  </Tab>
+                                  <Tab.Panel key={image.link}>
+                                    <img
+                                      src={image.link}
+                                      alt="Product Image"
+                                      className="h-full w-full object-cover object-center sm:rounded-lg"
+                                    />
+                                  </Tab.Panel>
                                 )
                               )}
-                            </Tab.List>
-                          </div>
+                            </Tab.Panels>
+                          </Tab.Group>
+                        </div>
+                        <div className="sm:col-span-8 lg:col-span-7">
+                          <h2 className="sr-only">
+                            {productDetails?.product_results?.title || ''}
+                          </h2>
+                          <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">
+                            {productDetails?.product_results?.title || ''}
+                          </h2>
 
-                          <Tab.Panels className="aspect-h-1 aspect-w-1 w-full">
-                            {productDetails?.product_results?.media.map(
-                              (image) => (
-                                <Tab.Panel key={image.link}>
-                                  <img
-                                    src={image.link}
-                                    alt="Product Image"
-                                    className="h-full w-full object-cover object-center sm:rounded-lg"
-                                  />
-                                </Tab.Panel>
-                              )
-                            )}
-                          </Tab.Panels>
-                        </Tab.Group>
-                      </div>
-                      <div className="sm:col-span-8 lg:col-span-7">
-                        <h2 className="sr-only">
-                          {productDetails?.product_results?.title || ''}
-                        </h2>
-                        <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">
-                          {productDetails?.product_results?.title || ''}
-                        </h2>
-
-                        <div className="mt-3">
-                          <p className="text-2xl text-gray-900">
-                            {productDetails?.product_price} at{' '}
-                            {productDetails?.product_source}
-                          </p>
-
-                          {/* Reviews */}
                           <div className="mt-3">
-                            <h4 className="sr-only">Reviews</h4>
-                            <div className="flex items-center">
+                            <p className="text-2xl text-gray-900">
+                              {productDetails?.product_price} at{' '}
+                              {productDetails?.product_source}
+                            </p>
+
+                            {/* Reviews */}
+                            <div className="mt-3">
+                              <h4 className="sr-only">Reviews</h4>
                               <div className="flex items-center">
-                                <StarIcon className="h-5 w-5 flex-shrink-0" />
+                                <div className="flex items-center">
+                                  <StarIcon className="h-5 w-5 flex-shrink-0" />
+                                </div>
+                                <p className="mr-1">
+                                  {productDetails?.product_results?.rating || 0}{' '}
+                                  out of 5 stars
+                                </p>
+                                <p>
+                                  ({productDetails?.product_results?.reviews})
+                                </p>
                               </div>
-                              <p className="mr-1">
-                                {productDetails?.product_results?.rating || 0}{' '}
-                                out of 5 stars
+                            </div>
+
+                            <div className="mt-6">
+                              <h4 className="sr-only">Description</h4>
+                              <h3 id="information-heading" className="sr-only">
+                                {productDetails?.product_results?.description ||
+                                  'No description'}
+                              </h3>
+
+                              {speakSpeechSynthesisSpeaking ? (
+                                <div className="flex items-center gap-2">
+                                  <PauseCircleIcon
+                                    onClick={() => pauseSpeechSynthesis()}
+                                    className="h-7 w-7 cursor-pointer"
+                                  />
+                                  <ArrowUturnLeftIcon
+                                    onClick={() =>
+                                      restartSpeechSynthesis(
+                                        productDetails?.product_results
+                                          ?.description || 'No description'
+                                      )
+                                    }
+                                    className="h-6 w-6 cursor-pointer"
+                                  />
+                                </div>
+                              ) : (
+                                <>
+                                  <PlayCircleIcon
+                                    onClick={() =>
+                                      speakSpeechSynthesis(
+                                        productDetails?.product_results
+                                          ?.description || 'No description'
+                                      )
+                                    }
+                                    className="h-7 w-7 cursor-pointer"
+                                  />
+                                </>
+                              )}
+                              <p className="text-sm">
+                                {productDetails?.product_results?.description ||
+                                  'No description'}
                               </p>
-                              <p>
-                                ({productDetails?.product_results?.reviews})
+                              <p className="mt-4 w-max rounded-lg bg-primary p-3 text-sm text-white">
+                                <a
+                                  href={productDetails?.product_link}
+                                  target="_blank"
+                                >
+                                  Go to the store
+                                </a>
                               </p>
                             </div>
                           </div>
 
                           <div className="mt-6">
-                            <h4 className="sr-only">Description</h4>
-                            <h3 id="information-heading" className="sr-only">
-                              {productDetails?.product_results?.description ||
-                                'No description'}
+                            <h3 id="options-heading" className="sr-only">
+                              Product Highlights
                             </h3>
 
-                            {speakSpeechSynthesisSpeaking ? (
-                              <div className="flex items-center gap-2">
-                                <PauseCircleIcon
-                                  onClick={() => pauseSpeechSynthesis()}
-                                  className="h-7 w-7 cursor-pointer"
-                                />
-                                <ArrowUturnLeftIcon
-                                  onClick={() =>
-                                    restartSpeechSynthesis(
-                                      productDetails?.product_results
-                                        ?.description || 'No description'
+                            {productDetails?.product_results?.extensions && (
+                              <div className="mt-6">
+                                <h4 className="sr-only">Highlights</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {productDetails?.product_results?.extensions.map(
+                                    (highlight) => (
+                                      <>
+                                        <span
+                                          key={highlight + 'sr'}
+                                          className="sr-only"
+                                        >
+                                          {highlight}
+                                        </span>
+                                        <span
+                                          key={highlight}
+                                          className="w-max rounded-full border border-gray-300 p-2"
+                                        >
+                                          {highlight}
+                                        </span>
+                                      </>
                                     )
-                                  }
-                                  className="h-6 w-6 cursor-pointer"
-                                />
-                              </div>
-                            ) : (
-                              <>
-                                <PlayCircleIcon
-                                  onClick={() =>
-                                    speakSpeechSynthesis(
-                                      productDetails?.product_results
-                                        ?.description || 'No description'
-                                    )
-                                  }
-                                  className="h-7 w-7 cursor-pointer"
-                                />
-                              </>
-                            )}
-                            <p className="text-sm">
-                              {productDetails?.product_results?.description ||
-                                'No description'}
-                            </p>
-                            <p className="mt-4 w-max rounded-lg bg-primary p-3 text-sm text-white">
-                              <a
-                                href={productDetails?.product_link}
-                                target="_blank"
-                              >
-                                Go to the store
-                              </a>
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mt-6">
-                          <h3 id="options-heading" className="sr-only">
-                            Product Highlights
-                          </h3>
-
-                          {productDetails?.product_results?.extensions && (
-                            <div className="mt-6">
-                              <h4 className="sr-only">Highlights</h4>
-                              <div className="flex flex-wrap gap-2">
-                                {productDetails?.product_results?.extensions.map(
-                                  (highlight) => (
-                                    <>
-                                      <span
-                                        key={highlight + 'sr'}
-                                        className="sr-only"
-                                      >
-                                        {highlight}
-                                      </span>
-                                      <span
-                                        key={highlight}
-                                        className="borde w-max rounded-full border-gray-300 p-2"
-                                      >
-                                        {highlight}
-                                      </span>
-                                    </>
-                                  )
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="mt-6">
-                          <h3 className="text-lg font-bold">
-                            <span className="flex items-center">
-                              <RocketLaunchIcon className="mr-1 h-5 w-5" />{' '}
-                              Highlighted Review
-                            </span>
-                          </h3>
-                          <h3 id="options-heading" className="sr-only">
-                            Highlighted Review
-                          </h3>
-
-                          <div className="mt-3">
-                            {productDetails?.reviews_results?.reviews.map(
-                              (review) => (
-                                <div key={review.position}>
-                                  <h1 className="sr-only">
-                                    {review.source.split('·')[0]}
-                                  </h1>
-                                  <h1 className="mb-1">
-                                    {review.source.split('·')[0]}
-                                  </h1>
-
-                                  <h3 className="sr-only">{review.date}</h3>
-                                  <h3 className="mb-2 text-xs">
-                                    {review.date}
-                                  </h3>
-
-                                  <h3 className="sr-only">{review.content}</h3>
-                                  <p className="text-sm">{review.content}</p>
+                                  )}
                                 </div>
-                              )
+                              </div>
                             )}
+                          </div>
+
+                          <div className="mt-6">
+                            <h3 className="text-lg font-bold">
+                              <span className="flex items-center">
+                                <RocketLaunchIcon className="mr-1 h-5 w-5" />{' '}
+                                Highlighted Review
+                              </span>
+                            </h3>
+                            <h3 id="options-heading" className="sr-only">
+                              Highlighted Review
+                            </h3>
+
+                            <div className="mt-3">
+                              {productDetails?.reviews_results?.reviews.map(
+                                (review) => (
+                                  <div key={review.position}>
+                                    <h1 className="sr-only">
+                                      {review.source.split('·')[0]}
+                                    </h1>
+                                    <h1 className="mb-1">
+                                      {review.source.split('·')[0]}
+                                    </h1>
+
+                                    <h3 className="sr-only">{review.date}</h3>
+                                    <h3 className="mb-2 text-xs">
+                                      {review.date}
+                                    </h3>
+
+                                    <h3 className="sr-only">
+                                      {review.content}
+                                    </h3>
+                                    <p className="text-sm">{review.content}</p>
+                                  </div>
+                                )
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

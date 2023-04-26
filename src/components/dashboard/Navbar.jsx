@@ -62,8 +62,7 @@ export default function Navbar() {
     });
 
     const searchResults = await res.json();
-    setSearchResults(searchResults.data.shopping_results);
-    setIsLoading(false);
+    setSearchResults(searchResults.data);
   };
 
   /**

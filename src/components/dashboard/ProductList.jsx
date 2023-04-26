@@ -13,14 +13,12 @@ export default function ProductList({
   savedProductsPage = false,
   userSavedItemIds = [],
 }) {
-  console.log('products: ', products);
   const router = useRouter();
-  const { searchResults, isLoading } = useContext(AppContext);
+  const { searchResults, isLoading, setIsLoading } = useContext(AppContext);
+  const [currentPagination, setCurrentPagination] = useState({});
 
   // Set initial state to the products from server-side rendering.
-  const [productList, setProductList] = useState(
-    products.shopping_results || products
-  );
+  const [productList, setProductList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [comparisons, setComparisons] = useState([]);
   const [popUpLoading, setPopUpLoading] = useState(false);
@@ -29,10 +27,21 @@ export default function ProductList({
   );
 
   useEffect(() => {
-    if (searchResults.length && !savedProductsPage) {
-      setProductList(searchResults);
+    if (searchResults?.shopping_results?.length && !savedProductsPage) {
+      setCurrentPagination(searchResults.serpapi_pagination);
+      setProductList(searchResults.shopping_results);
+    } else {
+      setProductList(products.shopping_results || products);
+      setCurrentPagination(products.serpapi_pagination || null);
     }
-  }, [searchResults, isLoading]);
+    setIsLoading(false);
+  }, [searchResults]);
+
+  useEffect(() => {
+    setProductList(products.shopping_results || products);
+    setCurrentPagination(products.serpapi_pagination || null);
+    setIsLoading(false);
+  }, [products]);
 
   const user = {
     ...useSession().data?.user,
@@ -186,7 +195,7 @@ export default function ProductList({
         {!isLoading && (
           <div className="mx-auto max-w-2xl py-10 px-4 sm:px-6 lg:max-w-7xl lg:px-2">
             <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-              {productList &&
+              {productList.length &&
                 productList.map((product) => (
                   <div
                     key={product.product_id}
@@ -219,7 +228,7 @@ export default function ProductList({
                             {product.price}
                           </p>
                           <span className="flex">
-                            <BuildingStorefrontIcon className="mr-2 h-5 text-black" />
+                            <BuildingStorefrontIcon className="mr-2 h-5 text-gray-700" />
                             <p className="text-sm font-bold">
                               {product.source}
                             </p>
@@ -268,7 +277,7 @@ export default function ProductList({
             {router.pathname === '/dashboard' && (
               <Pagination
                 onChangePagination={onChangePagination}
-                pagination={products.serpapi_pagination}
+                pagination={currentPagination}
               />
             )}
           </div>

@@ -25,7 +25,7 @@ export default function Pagination({ pagination, onChangePagination }) {
       {/* Pagination tabs */}
       <div className="hidden md:-mt-px md:flex">
         {pagination &&
-          Object.keys(pagination?.other_pages).map((page) => (
+          Object.keys(pagination?.other_pages || {}).map((page) => (
             <a
               key={page}
               href={pagination.other_pages[page]}

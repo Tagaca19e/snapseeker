@@ -36,10 +36,7 @@ export default function CameraUpload({ isMobileView }) {
     setIsLoading(true);
 
     const products = await uploadFile(imageSrc);
-
-    // TODO(etagaca): Handle rejection in promise.
-    setSearchResults(products.data.shopping_results);
-    setIsLoading(false);
+    setSearchResults(products.data);
   }, [webCamRef, setImgSrc]);
 
   return (

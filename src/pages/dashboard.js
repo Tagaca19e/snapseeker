@@ -22,8 +22,8 @@ export default function Dashboard({
    */
   const handlePaginationChange = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const response = await fetch('/api/get-paginated-products', {
         method: 'POST',
         headers: {
@@ -38,7 +38,6 @@ export default function Dashboard({
 
       // Change the current product search object.
       setCurrentProducts(data);
-      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
