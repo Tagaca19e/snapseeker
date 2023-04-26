@@ -13,6 +13,8 @@ export default async function getResults(req, res) {
         engine: 'google_shopping',
         google_domain: 'google.com',
         q: req.body,
+        gl: 'us',
+        hl: 'en',
         location: 'United States',
       },
       (data) => {

@@ -1,9 +1,17 @@
 import clientPromise from 'lib/mongodb';
 import { getSession } from 'next-auth/react';
+import { useContext, useEffect } from 'react';
+import { AppContext } from '../components/AppContextProvider';
 import Layout from '../components/dashboard/Layout';
 import ProfileSettings from '../components/dashboard/ProfileSettings';
 
 export default function Profile({ session, user }) {
+  const { setCurrentUser } = useContext(AppContext);
+
+  useEffect(() => {
+    setCurrentUser(user || null);
+  }, []);
+
   return (
     <div>
       <Layout>

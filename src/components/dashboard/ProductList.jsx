@@ -1,18 +1,24 @@
+import { BuildingStorefrontIcon, StarIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../AppContextProvider';
-import ProductComparisons from './ProductComparisons';
+import ProductComparisons from './modals/ProductComparisons';
+import ProductDetails from './modals/ProductDetails';
+import Pagination from './Pagination';
 
 export default function ProductList({
   products,
+  onChangePagination,
   savedProductsPage = false,
   userSavedItemIds = [],
 }) {
-  const { searchResults, isLoading } = useContext(AppContext);
+  const router = useRouter();
+  const { searchResults, isLoading, setIsLoading } = useContext(AppContext);
+  const [currentPagination, setCurrentPagination] = useState({});
 
   // Set initial state to the products from server-side rendering.
-  const [productList, setProductList] = useState(products);
+  const [productList, setProductList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [comparisons, setComparisons] = useState([]);
   const [popUpLoading, setPopUpLoading] = useState(false);
@@ -21,10 +27,21 @@ export default function ProductList({
   );
 
   useEffect(() => {
-    if (searchResults.length) {
-      setProductList(searchResults);
+    if (searchResults?.shopping_results?.length && !savedProductsPage) {
+      setCurrentPagination(searchResults.serpapi_pagination);
+      setProductList(searchResults.shopping_results || []);
+    } else {
+      setProductList(products.shopping_results || products || []);
+      setCurrentPagination(products.serpapi_pagination || null);
     }
-  }, [searchResults, isLoading]);
+    setIsLoading(false);
+  }, [searchResults]);
+
+  useEffect(() => {
+    setProductList(products.shopping_results || products || []);
+    setCurrentPagination(products.serpapi_pagination || null);
+    setIsLoading(false);
+  }, [products]);
 
   const user = {
     ...useSession().data?.user,
@@ -57,7 +74,7 @@ export default function ProductList({
   };
 
   /**
-   * Saved a product to the user's saved products the database.
+   * Saves a product to the user's saved products the database.
    * @param {Object} product - Product object to save.
    */
   const saveProduct = async (product) => {
@@ -118,6 +135,41 @@ export default function ProductList({
     setPopUpLoading(false);
   };
 
+  const [openProductModal, setOpenProductModal] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [productDetails, setProductDetails] = useState(null);
+
+  /**
+   * Opens product modal and fetches the product details.
+   * @param {string} productId - Product id to fetch details for.
+   * @param {string} productLink - Link for the product.
+   */
+  const onSelectProduct = async (productId, productLink, product) => {
+    setModalLoading(true);
+    setOpenProductModal(true);
+
+    const response = await fetch(
+      `../api/get-product-details?product_id=${productId}`,
+      {
+        method: 'GET',
+      }
+    );
+
+    const data = await response.json();
+    setModalLoading(false);
+    setProductDetails({
+      ...data.productDetails,
+      product_link: productLink,
+      product_source: product.source,
+      product_price: product.price,
+    });
+  };
+
+  // Callback function for closing the modal.
+  const onSetModal = (isOpen) => {
+    setOpenProductModal(isOpen);
+  };
+
   return (
     <>
       {/* Popup for showing product comparisons */}
@@ -128,71 +180,116 @@ export default function ProductList({
         comparisons={comparisons}
       />
 
+      {(router.pathname === '/dashboard' ||
+        router.pathname === '/saved-items') && (
+        <ProductDetails
+          productDetails={productDetails}
+          open={openProductModal}
+          modalLoading={modalLoading}
+          onSetModal={onSetModal}
+        />
+      )}
+
       <div className="bg-white">
         {!isLoading && (
-          <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-2">
-            <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-              {productList &&
-                productList.map((product) => (
-                  <div
-                    key={product.product_id}
-                    href={product.link}
-                    className="posit group flex flex-col justify-between"
-                  >
-                    <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
-                      <img
-                        src={product.thumbnail}
-                        alt={product.title}
-                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                      />
-                    </div>
-                    <div className="mt-4 flex justify-between">
-                      <div>
-                        <h3 className="text-sm text-gray-700">
-                          <Link href={product.link} target="_blank">
-                            {product.title}
-                          </Link>
-                        </h3>
-                        <p className="mt-1 text-sm text-gray-500">
-                          {product.rating}
-                        </p>
-                      </div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {product.price}
-                      </p>
-                    </div>
-                    <div class="my-1 flex flex-wrap gap-2 py-6 text-center">
-                      <button
-                        class={`border-gray mr-3 rounded border py-0.5 px-4 font-bold ${
-                          savedProductIds.has(product.product_id)
-                            ? 'bg-primary text-white'
-                            : 'text-gray-600'
-                        }`}
-                        onClick={() => saveProduct(product)}
+          <div className="mx-auto max-w-2xl py-10 px-4 sm:px-6 lg:max-w-7xl lg:px-2">
+            {productList.length || router.pathname === '/dashboard' ? (
+              <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                <>
+                  {productList.map((product) => (
+                    <div
+                      key={product.product_id}
+                      className="posit group flex flex-col justify-between"
+                    >
+                      <div
+                        className="cursor-pointer"
+                        onClick={() =>
+                          onSelectProduct(
+                            product.product_id,
+                            product.link,
+                            product
+                          )
+                        }
                       >
-                        {savedProductsPage ? (
-                          <>delete</>
-                        ) : (
-                          <>
-                            {savedProductIds.has(product.product_id)
-                              ? 'saved'
-                              : 'save'}
-                          </>
-                        )}
-                      </button>
-                      {product?.serpapi_product_api_comparisons && (
+                        <img
+                          src={product.thumbnail}
+                          alt={product.title}
+                          className="mb-3 w-full rounded-md border border-gray-300 object-cover object-center p-3 sm:h-[300px]"
+                        />
+
+                        {/* Product infomrmation */}
+                        <div className="flex flex-col gap-2">
+                          <h3 className="text-sm text-gray-700">
+                            {product.title}
+                          </h3>
+
+                          <div>
+                            <p className="mb-2 text-sm font-medium">
+                              {product.price}
+                            </p>
+                            <span className="flex">
+                              <BuildingStorefrontIcon className="mr-2 h-5 text-gray-700" />
+                              <p className="text-sm font-bold text-gray-700">
+                                {product.source}
+                              </p>
+                            </span>
+                          </div>
+
+                          <p className="mt-1 flex items-center text-sm text-gray-500">
+                            <StarIcon className="h-5 text-black" />
+                            {product.rating}: {product.reviews || 'No'} Reviews
+                          </p>
+                          {product.id}
+                        </div>
+                      </div>
+                      <div className="my-1 flex flex-wrap gap-2 py-2 text-center">
                         <button
-                          onClick={() => handleCompare(product?.product_id)}
-                          class="mr-3 rounded bg-[#3bb77e] 
-                    py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
+                          className={`border-gray mr-3 rounded border py-0.5 px-4 font-bold ${
+                            savedProductIds.has(product.product_id)
+                              ? 'bg-primary text-white'
+                              : 'text-gray-600'
+                          }`}
+                          onClick={() => saveProduct(product)}
                         >
-                          compare prices
+                          {savedProductsPage ? (
+                            <>delete</>
+                          ) : (
+                            <>
+                              {savedProductIds.has(product.product_id)
+                                ? 'saved'
+                                : 'save'}
+                            </>
+                          )}
                         </button>
-                      )}
+                        {product?.serpapi_product_api_comparisons && (
+                          <button
+                            onClick={() => handleCompare(product?.product_id)}
+                            className="mr-3 rounded bg-[#3bb77e] py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
+                          >
+                            compare prices
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-            </div>
+                  ))}
+                </>
+              </div>
+            ) : (
+              <div className="flex h-[70vh] flex-col items-center justify-center text-center text-gray-700">
+                <img className="h-[500px] w-[500px]" src="/empty-cart.svg" />
+                <p>
+                  <strong>Your saved items is currently empty</strong>
+                </p>
+                <p>Feel free to go to shop and explore!</p>
+              </div>
+            )}
+
+            {router.pathname === '/dashboard' && (
+              <Pagination
+                onChangePagination={onChangePagination}
+                pagination={currentPagination}
+              />
+            )}
           </div>
         )}
       </div>

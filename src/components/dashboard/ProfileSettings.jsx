@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
+import { AppContext } from '../AppContextProvider';
 
 export default function ProfileSettings({ session, user }) {
+  const { currentUser, setCurrentUser } = useContext(AppContext);
   const fullName = user.name.split(' ');
   const [firstName, setFirstName] = useState(fullName[0]);
   const [lastName, setLastName] = useState(fullName[1]);
@@ -29,6 +31,7 @@ export default function ProfileSettings({ session, user }) {
     if (response.status === 200) {
       setFirstName(event.target.first_name.value);
       setLastName(event.target.last_name.value);
+      setCurrentUser({ ...currentUser, name: `${firstName} ${lastName}` });
     }
 
     const data = await response.json();
@@ -61,7 +64,7 @@ export default function ProfileSettings({ session, user }) {
   return (
     <div className="m-6 h-[80vh]">
       <div className="mx-auto max-w-md py-20 text-center">
-        <h1 className="text-5xl font-extrabold">Account settings</h1>
+        <h1 className="text-5xl font-extrabold">Account Settings</h1>
         <p className="mt-4 text-gray-600">
           Manage the name and password associated with your account.
         </p>

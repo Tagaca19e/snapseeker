@@ -13,6 +13,9 @@ export default function Login() {
   /* Displays error message for a certain amount of time. */
   const displayError = (message) => {
     setError(true);
+    if (message === 'CredentialsSignin') {
+      message = 'Invalid email or password.';
+    }
     setMessage(message);
     setTimeout(() => {
       setError(false);
@@ -48,7 +51,7 @@ export default function Login() {
   return (
     <Layout>
       <div className="m-6 flex justify-center sm:m-auto">
-        <div className="m-auto w-full max-w-md bg-white py-8 px-8 shadow  sm:rounded-lg sm:px-10">
+        <div className="m-auto w-full max-w-md bg-white py-8 px-8 shadow ring-1 ring-inset ring-gray-900/10 sm:rounded-lg sm:px-10 ">
           <form onSubmit={handleLogin}>
             <h1 className="text-center text-3xl font-bold">
               Let's get you saving!

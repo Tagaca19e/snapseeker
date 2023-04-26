@@ -1,27 +1,63 @@
 import SerpApi from 'google-search-results-nodejs';
 import { getSession } from 'next-auth/react';
+import { useContext, useEffect, useState } from 'react';
+import { AppContext } from '../components/AppContextProvider';
 import CameraUpload from '../components/dashboard/CameraUpload';
 import Layout from '../components/dashboard/Layout';
+import ProductListLoader from '../components/dashboard/loaders/ProductList';
 import ProductList from '../components/dashboard/ProductList';
-import ProductListLoader from '../components/dashboard/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
 export default function Dashboard({
+  user,
   products,
   isMobileView,
   userSavedItemIds,
 }) {
+  const { setIsLoading, setCurrentUser } = useContext(AppContext);
+  const [currentProducts, setCurrentProducts] = useState(products);
+
+  useEffect(() => {
+    setCurrentUser(user || null);
+  }, []);
+
+  /**
+   * Changes current product object when user clicks on pagination link.
+   * @param {Event} event - On click event when user clicks on pagination link.
+   */
+  const handlePaginationChange = async (event) => {
+    event.preventDefault();
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/get-paginated-products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: event.target.href,
+        }),
+      });
+
+      const data = await response.json();
+
+      // Change the current product search object.
+      setCurrentProducts(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div>
-      <Layout>
-        <CameraUpload isMobileView={isMobileView} />
-        <ProductListLoader />
-        <ProductList
-          userSavedItemIds={userSavedItemIds}
-          products={products.shopping_results}
-        />
-      </Layout>
-    </div>
+    <Layout>
+      <CameraUpload isMobileView={isMobileView} />
+      <ProductListLoader />
+      <ProductList
+        products={currentProducts}
+        onChangePagination={handlePaginationChange}
+        userSavedItemIds={userSavedItemIds}
+      />
+    </Layout>
   );
 }
 
@@ -57,6 +93,15 @@ export async function getServerSideProps(context) {
     ? true
     : false;
 
+  const userData = await db.collection('users').findOne({
+    email: session.user.email,
+  });
+
+  const user = {
+    name: userData.name,
+    email: userData.email,
+  };
+
   const search = new SerpApi.GoogleSearch(process.env.SERP_API_KEY);
   const productsPromise = new Promise((resolve, reject) => {
     search.json(
@@ -80,7 +125,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      session,
+      user,
       products: products || {},
       isMobileView,
       userSavedItemIds: userSavedItemIds || [],

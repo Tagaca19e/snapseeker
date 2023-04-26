@@ -1,23 +1,20 @@
 import SerpApi from 'google-search-results-nodejs';
 
-export default async function (req, res) {
+export default async function getProductDetails(req, res) {
   const search = new SerpApi.GoogleSearch(process.env.SERP_API_KEY);
+
   const params = {
-    engine: 'google',
-    q: req.body,
-    location: 'United States',
+    engine: 'google_product',
     google_domain: 'google.com',
+    product_id: req.query.product_id,
     gl: 'us',
     hl: 'en',
-    tbm: 'shop',
-    safe: 'active',
-    device: 'mobile',
   };
 
   const callback = function (data) {
-    const relatedSearches = data['people_also_search_for'];
-    res.status(200).json({ relatedSearches });
+    res.status(200).json({ productDetails: data });
   };
 
+  // Show result as JSON
   search.json(params, callback);
 }

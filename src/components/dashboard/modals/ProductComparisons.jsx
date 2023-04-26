@@ -1,5 +1,5 @@
-import { Dialog } from '@headlessui/react';
 import { BuildingStorefrontIcon } from '@heroicons/react/20/solid';
+import { Dialog } from '@headlessui/react';
 import Link from 'next/link';
 import PopUpContainer from './PopUpContainer';
 
