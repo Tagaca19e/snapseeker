@@ -32,10 +32,8 @@ export default function ProductModal({
 
     if (window.speechSynthesis.paused) {
       window.speechSynthesis.resume();
-      console.log('resume');
     } else {
       window.speechSynthesis.speak(msg);
-      console.log('speak');
     }
 
     // Register an event listener to handle the end of the speech
@@ -293,42 +291,46 @@ export default function ProductModal({
                             )}
                           </div>
 
-                          <div className="mt-6">
-                            <h3 className="text-lg font-bold">
-                              <span className="flex items-center">
-                                <RocketLaunchIcon className="mr-1 h-5 w-5" />{' '}
+                          {productDetails?.reviews_results?.reviews && (
+                            <div className="mt-6">
+                              <h3 className="text-lg font-bold">
+                                <span className="flex items-center">
+                                  <RocketLaunchIcon className="mr-1 h-5 w-5" />{' '}
+                                  Highlighted Review
+                                </span>
+                              </h3>
+                              <h3 id="options-heading" className="sr-only">
                                 Highlighted Review
-                              </span>
-                            </h3>
-                            <h3 id="options-heading" className="sr-only">
-                              Highlighted Review
-                            </h3>
+                              </h3>
 
-                            <div className="mt-3">
-                              {productDetails?.reviews_results?.reviews.map(
-                                (review) => (
-                                  <div key={review.position}>
-                                    <h1 className="sr-only">
-                                      {review.source.split('·')[0]}
-                                    </h1>
-                                    <h1 className="mb-1">
-                                      {review.source.split('·')[0]}
-                                    </h1>
+                              <div className="mt-3">
+                                {productDetails?.reviews_results?.reviews.map(
+                                  (review) => (
+                                    <div key={review.position}>
+                                      <h1 className="sr-only">
+                                        {review.source.split('·')[0]}
+                                      </h1>
+                                      <h1 className="mb-1">
+                                        {review.source.split('·')[0]}
+                                      </h1>
 
-                                    <h3 className="sr-only">{review.date}</h3>
-                                    <h3 className="mb-2 text-xs">
-                                      {review.date}
-                                    </h3>
+                                      <h3 className="sr-only">{review.date}</h3>
+                                      <h3 className="mb-2 text-xs">
+                                        {review.date}
+                                      </h3>
 
-                                    <h3 className="sr-only">
-                                      {review.content}
-                                    </h3>
-                                    <p className="text-sm">{review.content}</p>
-                                  </div>
-                                )
-                              )}
+                                      <h3 className="sr-only">
+                                        {review.content}
+                                      </h3>
+                                      <p className="text-sm">
+                                        {review.content}
+                                      </p>
+                                    </div>
+                                  )
+                                )}
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     )}

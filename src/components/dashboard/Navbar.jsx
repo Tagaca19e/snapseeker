@@ -1,7 +1,12 @@
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { CameraIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { signOut, useSession } from 'next-auth/react';
+import {
+  Bars3Icon,
+  BoltIcon,
+  BoltSlashIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
+import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment, useContext, useEffect, useState } from 'react';
@@ -40,10 +45,7 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState('');
   const [autoCompleteResults, setAutoCompleteResults] = useState([]);
   const [hideAutoCompleteResults, setHideAutoCompleteResults] = useState(true);
-
-  const user = {
-    ...useSession().data?.user,
-  };
+  const [autoCompleteDisabled, setAutoCompleteDisabled] = useState(true);
 
   /**
    * Searches for products based on the search term.
@@ -71,21 +73,22 @@ export default function Navbar() {
    */
   const handleAutoComplete = async (searchTerm) => {
     setSearchTerm(searchTerm);
-    if (!searchTerm) {
-      setHideAutoCompleteResults(true);
-      setAutoCompleteResults([]);
-      return;
+    if (!autoCompleteDisabled) {
+      if (!searchTerm) {
+        setHideAutoCompleteResults(true);
+        setAutoCompleteResults([]);
+        return;
+      }
+
+      const res = await fetch('../api/autocomplete', {
+        method: 'POST',
+        body: searchTerm,
+      });
+
+      const data = await res.json();
+      setAutoCompleteResults(data.relatedSearches || []);
+      setHideAutoCompleteResults(false);
     }
-
-    const res = await fetch('../api/autocomplete', {
-      method: 'POST',
-      body: searchTerm,
-    });
-
-    const data = await res.json();
-    console.log('data: ', data);
-    setAutoCompleteResults(data.relatedSearches || []);
-    setHideAutoCompleteResults(false);
   };
 
   /* Closes autocomplete results when user clicks outside of the search bar or
@@ -99,6 +102,14 @@ export default function Navbar() {
     ) {
       setHideAutoCompleteResults(true);
     }
+  };
+
+  const disableAutocomplete = () => {
+    setAutoCompleteDisabled(true);
+  };
+
+  const enableAutocomplete = () => {
+    setAutoCompleteDisabled(false);
   };
 
   useEffect(() => {
@@ -129,7 +140,7 @@ export default function Navbar() {
               {router.pathname === '/dashboard' && (
                 <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
                   <div className="relative w-full sm:max-w-xs">
-                    <div className="flex">
+                    <div className="flex items-center">
                       <label htmlFor="search" className="sr-only">
                         Search
                       </label>
@@ -169,6 +180,21 @@ export default function Navbar() {
                           aria-hidden="true"
                         />
                       </button>
+                      <div className="ml-2 cursor-pointer">
+                        {autoCompleteDisabled ? (
+                          <BoltSlashIcon
+                            onClick={() => enableAutocomplete()}
+                            title="Autocomplete disabled"
+                            className="h-8 w-8 rounded-full border border-gray-500 p-1"
+                          />
+                        ) : (
+                          <BoltIcon
+                            onClick={() => disableAutocomplete()}
+                            title="Autocomplete enabled"
+                            className="h-8 w-8 rounded-full border border-gray-500 p-1"
+                          />
+                        )}
+                      </div>
                     </div>
                     {/* Autocomplete suggestions */}
                     {autoCompleteResults.length > 0 &&

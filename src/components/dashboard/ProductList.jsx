@@ -29,16 +29,16 @@ export default function ProductList({
   useEffect(() => {
     if (searchResults?.shopping_results?.length && !savedProductsPage) {
       setCurrentPagination(searchResults.serpapi_pagination);
-      setProductList(searchResults.shopping_results);
+      setProductList(searchResults.shopping_results || []);
     } else {
-      setProductList(products.shopping_results || products);
+      setProductList(products.shopping_results || products || []);
       setCurrentPagination(products.serpapi_pagination || null);
     }
     setIsLoading(false);
   }, [searchResults]);
 
   useEffect(() => {
-    setProductList(products.shopping_results || products);
+    setProductList(products.shopping_results || products || []);
     setCurrentPagination(products.serpapi_pagination || null);
     setIsLoading(false);
   }, [products]);
@@ -148,7 +148,6 @@ export default function ProductList({
     setModalLoading(true);
     setOpenProductModal(true);
 
-    console.log('product: ', product);
     const response = await fetch(
       `../api/get-product-details?product_id=${productId}`,
       {
@@ -230,7 +229,7 @@ export default function ProductList({
                             </p>
                             <span className="flex">
                               <BuildingStorefrontIcon className="mr-2 h-5 text-gray-700" />
-                              <p className="text-sm font-bold">
+                              <p className="text-sm font-bold text-gray-700">
                                 {product.source}
                               </p>
                             </span>
@@ -238,7 +237,7 @@ export default function ProductList({
 
                           <p className="mt-1 flex items-center text-sm text-gray-500">
                             <StarIcon className="h-5 text-black" />
-                            {product.rating}: {product.reviews} Reviews
+                            {product.rating}: {product.reviews || 'No'} Reviews
                           </p>
                           {product.id}
                         </div>

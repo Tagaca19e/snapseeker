@@ -13,6 +13,9 @@ export default function Login() {
   /* Displays error message for a certain amount of time. */
   const displayError = (message) => {
     setError(true);
+    if (message === 'CredentialsSignin') {
+      message = 'Invalid email or password.';
+    }
     setMessage(message);
     setTimeout(() => {
       setError(false);
