@@ -41,10 +41,8 @@ export default function Navbar() {
   const [autoCompleteResults, setAutoCompleteResults] = useState([]);
   const [hideAutoCompleteResults, setHideAutoCompleteResults] = useState(true);
 
-  // TODO(etagaca): Implement real user image.
   const user = {
     ...useSession().data?.user,
-    imageUrl: '/user.svg',
   };
 
   /**
@@ -115,13 +113,13 @@ export default function Navbar() {
     <Disclosure as="header" className="bg-white shadow">
       {({ open }) => (
         <>
-          <div className="mx-auto mb-1 max-w-7xl px-2 sm:px-4 lg:divide-y lg:divide-gray-200 lg:px-8">
+          <div className="mx-auto mb-1 max-w-7xl px-2 lg:divide-y lg:divide-gray-200">
             <div className="relative flex h-16 justify-between">
               <div className="relative z-10 flex px-2 lg:px-0">
                 <div className="flex flex-shrink-0 items-center">
                   <Link href="/">
                     <img
-                      className="w-autof block h-12"
+                      className="w-autof block h-12 rounded-md"
                       src="/logos/logo.svg"
                       alt="Snapseeker"
                     />
@@ -214,11 +212,9 @@ export default function Navbar() {
                   <div>
                     <Menu.Button className="flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src={user.imageUrl}
-                        alt=""
-                      />
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full  bg-primary text-xl text-white">
+                        <a>{user.name.split('')[0]}</a>
+                      </div>
                     </Menu.Button>
                   </div>
                   <Transition
@@ -296,11 +292,9 @@ export default function Navbar() {
             <div className="border-t border-gray-200 pt-4 pb-3">
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src={user.imageUrl}
-                    alt=""
-                  />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full  bg-primary text-xl text-white">
+                    <a>{user.name.split('')[0]}</a>
+                  </div>
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">

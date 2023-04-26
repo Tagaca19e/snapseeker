@@ -3,19 +3,24 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../AppContextProvider';
-import ProductComparisons from './ProductComparisons';
-import ProductModal from './ProductModal/Modal';
+import ProductComparisons from './modals/ProductComparisons';
+import ProductDetails from './modals/ProductDetails';
+import Pagination from './Pagination';
 
 export default function ProductList({
   products,
+  onChangePagination,
   savedProductsPage = false,
   userSavedItemIds = [],
 }) {
+  console.log('products: ', products);
   const router = useRouter();
   const { searchResults, isLoading } = useContext(AppContext);
 
   // Set initial state to the products from server-side rendering.
-  const [productList, setProductList] = useState(products);
+  const [productList, setProductList] = useState(
+    products.shopping_results || products
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [comparisons, setComparisons] = useState([]);
   const [popUpLoading, setPopUpLoading] = useState(false);
@@ -24,7 +29,7 @@ export default function ProductList({
   );
 
   useEffect(() => {
-    if (searchResults.length) {
+    if (searchResults.length && !savedProductsPage) {
       setProductList(searchResults);
     }
   }, [searchResults, isLoading]);
@@ -60,7 +65,7 @@ export default function ProductList({
   };
 
   /**
-   * Saved a product to the user's saved products the database.
+   * Saves a product to the user's saved products the database.
    * @param {Object} product - Product object to save.
    */
   const saveProduct = async (product) => {
@@ -121,16 +126,20 @@ export default function ProductList({
     setPopUpLoading(false);
   };
 
-  const [open, setOpen] = useState(false);
+  const [openProductModal, setOpenProductModal] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const [productDetails, setProductDetails] = useState(null);
-  const [selectedProductId, setSelectedProductId] = useState(null);
 
-  const onSelectProduct = async (productId, productLink) => {
+  /**
+   * Opens product modal and fetches the product details.
+   * @param {string} productId - Product id to fetch details for.
+   * @param {string} productLink - Link for the product.
+   */
+  const onSelectProduct = async (productId, productLink, product) => {
     setModalLoading(true);
-    setSelectedProductId(productId);
-    setOpen(true);
+    setOpenProductModal(true);
 
+    console.log('product: ', product);
     const response = await fetch(
       `../api/get-product-details?product_id=${productId}`,
       {
@@ -140,12 +149,17 @@ export default function ProductList({
 
     const data = await response.json();
     setModalLoading(false);
-    setProductDetails({ ...data.productDetails, product_link: productLink });
-    console.log('data: ', data);
+    setProductDetails({
+      ...data.productDetails,
+      product_link: productLink,
+      product_source: product.source,
+      product_price: product.price,
+    });
   };
 
+  // Callback function for closing the modal.
   const onSetModal = (isOpen) => {
-    setOpen(isOpen);
+    setOpenProductModal(isOpen);
   };
 
   return (
@@ -158,11 +172,11 @@ export default function ProductList({
         comparisons={comparisons}
       />
 
-      {router.pathname === '/dashboard' && (
-        <ProductModal
-          selectedProductId={selectedProductId}
+      {(router.pathname === '/dashboard' ||
+        router.pathname === '/saved-items') && (
+        <ProductDetails
           productDetails={productDetails}
-          open={open}
+          open={openProductModal}
           modalLoading={modalLoading}
           onSetModal={onSetModal}
         />
@@ -176,19 +190,22 @@ export default function ProductList({
                 productList.map((product) => (
                   <div
                     key={product.product_id}
-                    // href={product.link}
                     className="posit group flex flex-col justify-between"
                   >
                     <div
                       className="cursor-pointer"
                       onClick={() =>
-                        onSelectProduct(product.product_id, product.link)
+                        onSelectProduct(
+                          product.product_id,
+                          product.link,
+                          product
+                        )
                       }
                     >
                       <img
                         src={product.thumbnail}
                         alt={product.title}
-                        className="mb-3 h-[300px] w-full rounded-md border border-black object-cover object-center p-3"
+                        className="mb-3 w-full rounded-md border border-gray-300 object-cover object-center p-3 sm:h-[300px]"
                       />
 
                       {/* Product infomrmation */}
@@ -238,8 +255,7 @@ export default function ProductList({
                       {product?.serpapi_product_api_comparisons && (
                         <button
                           onClick={() => handleCompare(product?.product_id)}
-                          className="mr-3 rounded bg-[#3bb77e] 
-                    py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
+                          className="mr-3 rounded bg-[#3bb77e] py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
                         >
                           compare prices
                         </button>
@@ -248,6 +264,13 @@ export default function ProductList({
                   </div>
                 ))}
             </div>
+
+            {router.pathname === '/dashboard' && (
+              <Pagination
+                onChangePagination={onChangePagination}
+                pagination={products.serpapi_pagination}
+              />
+            )}
           </div>
         )}
       </div>

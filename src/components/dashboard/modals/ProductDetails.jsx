@@ -1,34 +1,76 @@
 import { Dialog, Tab, Transition } from '@headlessui/react';
-import { StarIcon } from '@heroicons/react/20/solid';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Fragment, useEffect } from 'react';
+import {
+  ArrowUturnLeftIcon, PauseCircleIcon, PlayCircleIcon, RocketLaunchIcon, StarIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
+import { Fragment, useState } from 'react';
+import ProductDetailsLoader from '../loaders/ProductDetails';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
 export default function ProductModal({
-  selectedProductId,
   productDetails,
   open,
   modalLoading,
   onSetModal,
 }) {
-  console.log('selected product id:', selectedProductId);
+  const [speakSpeechSynthesisSpeaking, setSpeakSpeechSynthesisSpeaking] =
+    useState(false);
 
-  // TODO(etagaca): Remove test useEffects.
-  useEffect(() => {
-    console.log('modal loading:', modalLoading);
-    console.log('product details:', productDetails);
-  }, [modalLoading]);
+  let msg;
+  function speakSpeechSynthesis(text) {
+    msg = new SpeechSynthesisUtterance(text);
+    msg.lang = `en-US`;
+    msg.rate = 0.9;
+    msg.volume = 1;
 
-  useEffect(() => {
-    console.log('open:', open);
-  }, [open]);
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+      console.log('resume');
+    } else {
+      window.speechSynthesis.speak(msg);
+      console.log('speak');
+    }
+
+    // Register an event listener to handle the end of the speech
+    msg.addEventListener('end', () => {
+      console.log('speech finished');
+      setSpeakSpeechSynthesisSpeaking(false);
+    });
+
+    setSpeakSpeechSynthesisSpeaking(true);
+  }
+
+  function pauseSpeechSynthesis() {
+    console.log('pause');
+    window.speechSynthesis.pause();
+    setSpeakSpeechSynthesisSpeaking(false);
+  }
+
+  function restartSpeechSynthesis(text) {
+    console.log('restart');
+    window.speechSynthesis.cancel();
+    speakSpeechSynthesis(text);
+  }
+
+  function closeSpeechSynthesis() {
+    console.log('close');
+    window.speechSynthesis.cancel();
+    setSpeakSpeechSynthesisSpeaking(false);
+  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onSetModal}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => {
+          onSetModal(false);
+          closeSpeechSynthesis();
+        }}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -44,9 +86,7 @@ export default function ProductModal({
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex min-h-full items-stretch justify-center text-center md:items-center md:px-2 lg:px-4">
             {modalLoading ? (
-              <Transition.Child>
-                <div className="h-11 bg-white">Loading...</div>
-              </Transition.Child>
+              <ProductDetailsLoader />
             ) : (
               <Transition.Child
                 as={Fragment}
@@ -62,7 +102,10 @@ export default function ProductModal({
                     <button
                       type="button"
                       className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 sm:right-6 sm:top-8 md:right-6 md:top-6 lg:right-8 lg:top-8"
-                      onClick={() => onSetModal(false)}
+                      onClick={() => {
+                        onSetModal(false);
+                        closeSpeechSynthesis();
+                      }}
                     >
                       <span className="sr-only">Close</span>
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -73,9 +116,9 @@ export default function ProductModal({
                         {/* Image gallery */}
                         <Tab.Group as="div" className="flex flex-col-reverse">
                           {/* Image selector */}
-                          <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
+                          <div className="mx-auto mt-6 w-full max-w-2xl lg:max-w-none">
                             <Tab.List className="grid grid-cols-4 gap-6">
-                              {productDetails?.product_results.media.map(
+                              {productDetails?.product_results?.media.map(
                                 (image) => (
                                   <Tab
                                     key={image.link}
@@ -111,7 +154,7 @@ export default function ProductModal({
                           </div>
 
                           <Tab.Panels className="aspect-h-1 aspect-w-1 w-full">
-                            {productDetails?.product_results.media.map(
+                            {productDetails?.product_results?.media.map(
                               (image) => (
                                 <Tab.Panel key={image.link}>
                                   <img
@@ -126,21 +169,17 @@ export default function ProductModal({
                         </Tab.Group>
                       </div>
                       <div className="sm:col-span-8 lg:col-span-7">
+                        <h2 className="sr-only">
+                          {productDetails?.product_results?.title || ''}
+                        </h2>
                         <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">
                           {productDetails?.product_results?.title || ''}
                         </h2>
 
                         <div className="mt-3">
-                          <h3 id="information-heading" className="sr-only">
-                            {productDetails?.product_results?.description ||
-                              'No description'}
-                          </h3>
-
                           <p className="text-2xl text-gray-900">
-                            {
-                              productDetails?.product_results.typical_prices
-                                .shown_price
-                            }
+                            {productDetails?.product_price} at{' '}
+                            {productDetails?.product_source}
                           </p>
 
                           {/* Reviews */}
@@ -151,16 +190,52 @@ export default function ProductModal({
                                 <StarIcon className="h-5 w-5 flex-shrink-0" />
                               </div>
                               <p className="mr-1">
-                                {productDetails?.product_results.rating || 0}{' '}
+                                {productDetails?.product_results?.rating || 0}{' '}
                                 out of 5 stars
                               </p>
-                              <p>({productDetails?.product_results.reviews})</p>
+                              <p>
+                                ({productDetails?.product_results?.reviews})
+                              </p>
                             </div>
                           </div>
 
                           <div className="mt-6">
                             <h4 className="sr-only">Description</h4>
-                            <p className="text-sm text-gray-700">
+                            <h3 id="information-heading" className="sr-only">
+                              {productDetails?.product_results?.description ||
+                                'No description'}
+                            </h3>
+
+                            {speakSpeechSynthesisSpeaking ? (
+                              <div className="flex items-center gap-2">
+                                <PauseCircleIcon
+                                  onClick={() => pauseSpeechSynthesis()}
+                                  className="h-7 w-7 cursor-pointer"
+                                />
+                                <ArrowUturnLeftIcon
+                                  onClick={() =>
+                                    restartSpeechSynthesis(
+                                      productDetails?.product_results
+                                        ?.description || 'No description'
+                                    )
+                                  }
+                                  className="h-6 w-6 cursor-pointer"
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <PlayCircleIcon
+                                  onClick={() =>
+                                    speakSpeechSynthesis(
+                                      productDetails?.product_results
+                                        ?.description || 'No description'
+                                    )
+                                  }
+                                  className="h-7 w-7 cursor-pointer"
+                                />
+                              </>
+                            )}
+                            <p className="text-sm">
                               {productDetails?.product_results?.description ||
                                 'No description'}
                             </p>
@@ -180,18 +255,26 @@ export default function ProductModal({
                             Product Highlights
                           </h3>
 
-                          {productDetails?.product_results.extensions && (
+                          {productDetails?.product_results?.extensions && (
                             <div className="mt-6">
                               <h4 className="sr-only">Highlights</h4>
                               <div className="flex flex-wrap gap-2">
-                                {productDetails?.product_results.extensions.map(
+                                {productDetails?.product_results?.extensions.map(
                                   (highlight) => (
-                                    <span
-                                      key={highlight}
-                                      className="w-max rounded-full border border-black p-2"
-                                    >
-                                      {highlight}
-                                    </span>
+                                    <>
+                                      <span
+                                        key={highlight + 'sr'}
+                                        className="sr-only"
+                                      >
+                                        {highlight}
+                                      </span>
+                                      <span
+                                        key={highlight}
+                                        className="borde w-max rounded-full border-gray-300 p-2"
+                                      >
+                                        {highlight}
+                                      </span>
+                                    </>
                                   )
                                 )}
                               </div>
@@ -200,34 +283,38 @@ export default function ProductModal({
                         </div>
 
                         <div className="mt-6">
+                          <h3 className="text-lg font-bold">
+                            <span className="flex items-center">
+                              <RocketLaunchIcon className="mr-1 h-5 w-5" />{' '}
+                              Highlighted Review
+                            </span>
+                          </h3>
                           <h3 id="options-heading" className="sr-only">
-                            Online Sellers
+                            Highlighted Review
                           </h3>
 
-                          {productDetails?.sellers_results.online_sellers && (
-                            <div className="mt-6">
-                              <h4 className="sr-only">Highlights</h4>
-                              <div className="flex flex-wrap gap-2">
-                                {productDetails?.sellers_results.online_sellers.map(
-                                  (seller) => (
-                                    <a
-                                      href={seller.link}
-                                      target="_blank"
-                                      className="w-full"
-                                    >
-                                      <div
-                                        key={seller.position}
-                                        className="flex w-full justify-between rounded-lg border border-black p-2"
-                                      >
-                                        <span>{seller.name}</span>
-                                        <span>{seller.base_price}</span>
-                                      </div>
-                                    </a>
-                                  )
-                                )}
-                              </div>
-                            </div>
-                          )}
+                          <div className="mt-3">
+                            {productDetails?.reviews_results?.reviews.map(
+                              (review) => (
+                                <div key={review.position}>
+                                  <h1 className="sr-only">
+                                    {review.source.split('·')[0]}
+                                  </h1>
+                                  <h1 className="mb-1">
+                                    {review.source.split('·')[0]}
+                                  </h1>
+
+                                  <h3 className="sr-only">{review.date}</h3>
+                                  <h3 className="mb-2 text-xs">
+                                    {review.date}
+                                  </h3>
+
+                                  <h3 className="sr-only">{review.content}</h3>
+                                  <p className="text-sm">{review.content}</p>
+                                </div>
+                              )
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

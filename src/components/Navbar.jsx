@@ -23,7 +23,7 @@ export default function Navbar() {
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Snapeseeker</span>
             <img
-              className="block h-12 w-auto"
+              className="block h-12 w-auto rounded-md"
               src="/logos/logo.svg"
               alt="Snapseeker"
             />
@@ -34,7 +34,7 @@ export default function Navbar() {
           {!isLoginPage && (
             <Link
               href="/auth/login"
-              className="rounded-md border border-black px-3 py-2 text-sm font-semibold transition duration-200 hover:border-none hover:bg-primary hover:text-white"
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm font-semibold transition duration-200 hover:border-none hover:bg-primary hover:text-white"
             >
               Log in <span aria-hidden="true">→</span>
             </Link>
@@ -42,7 +42,7 @@ export default function Navbar() {
           {!isSignUpPage && (
             <Link
               href="/auth/sign-up"
-              className="rounded-md border bg-primary px-3 py-2 text-sm font-semibold text-white transition duration-200 hover:border-black hover:bg-transparent hover:text-black"
+              className="rounded-md border bg-primary px-3 py-2 text-sm font-semibold text-white transition duration-200 hover:border-gray-300 hover:bg-transparent hover:text-black"
             >
               Sign up
             </Link>

@@ -2,22 +2,23 @@ import { getSession } from 'next-auth/react';
 import { React } from 'react';
 import CameraUpload from '../components/dashboard/CameraUpload';
 import Layout from '../components/dashboard/Layout';
+import ProductListLoader from '../components/dashboard/loaders/ProductList';
 import ProductList from '../components/dashboard/ProductList';
-import ProductListLoader from '../components/dashboard/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
 export default function SavedItems({ savedItems, savedItemIds, isMobileView }) {
+  console.log(savedItems);
+
   return (
     <div>
       <Layout>
-        <CameraUpload isMobileView={isMobileView} />
-        <ProductListLoader />
+        <CameraUpload isMobileView={isMobileView} /> <ProductListLoader />
         <ProductList
           products={savedItems}
           savedProductsPage={true}
           userSavedItemIds={savedItemIds}
-        />
-      </Layout>
+        />{' '}
+      </Layout>{' '}
     </div>
   );
 }

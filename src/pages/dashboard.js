@@ -1,9 +1,11 @@
 import SerpApi from 'google-search-results-nodejs';
 import { getSession } from 'next-auth/react';
+import { useContext, useState } from 'react';
+import { AppContext } from '../components/AppContextProvider';
 import CameraUpload from '../components/dashboard/CameraUpload';
 import Layout from '../components/dashboard/Layout';
+import ProductListLoader from '../components/dashboard/loaders/ProductList';
 import ProductList from '../components/dashboard/ProductList';
-import ProductListLoader from '../components/dashboard/ProductListLoader';
 import clientPromise from '/lib/mongodb';
 
 export default function Dashboard({
@@ -11,17 +13,47 @@ export default function Dashboard({
   isMobileView,
   userSavedItemIds,
 }) {
+  const { setIsLoading } = useContext(AppContext);
+  const [currentProducts, setCurrentProducts] = useState(products);
+
+  /**
+   * Changes current product object when user clicks on pagination link.
+   * @param {Event} event - On click event when user clicks on pagination link.
+   */
+  const handlePaginationChange = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/get-paginated-products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: event.target.href,
+        }),
+      });
+
+      const data = await response.json();
+
+      // Change the current product search object.
+      setCurrentProducts(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div>
-      <Layout>
-        <CameraUpload isMobileView={isMobileView} />
-        <ProductListLoader />
-        <ProductList
-          userSavedItemIds={userSavedItemIds}
-          products={products.shopping_results}
-        />
-      </Layout>
-    </div>
+    <Layout>
+      <CameraUpload isMobileView={isMobileView} />
+      <ProductListLoader />
+      <ProductList
+        products={currentProducts}
+        onChangePagination={handlePaginationChange}
+        userSavedItemIds={userSavedItemIds}
+      />
+    </Layout>
   );
 }
 

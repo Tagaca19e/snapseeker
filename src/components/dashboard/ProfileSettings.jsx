@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function ProfileSettings({ session, user }) {
   const fullName = user.name.split(' ');
@@ -61,7 +61,7 @@ export default function ProfileSettings({ session, user }) {
   return (
     <div className="m-6 h-[80vh]">
       <div className="mx-auto max-w-md py-20 text-center">
-        <h1 className="text-5xl font-extrabold">Account settings</h1>
+        <h1 className="text-5xl font-extrabold">Account Settings</h1>
         <p className="mt-4 text-gray-600">
           Manage the name and password associated with your account.
         </p>
