@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { AppContext } from '../AppContextProvider';
 
 export default function ProfileSettings({ session, user }) {
+  const { currentUser, setCurrentUser } = useContext(AppContext);
   const fullName = user.name.split(' ');
   const [firstName, setFirstName] = useState(fullName[0]);
   const [lastName, setLastName] = useState(fullName[1]);
@@ -29,6 +31,7 @@ export default function ProfileSettings({ session, user }) {
     if (response.status === 200) {
       setFirstName(event.target.first_name.value);
       setLastName(event.target.last_name.value);
+      setCurrentUser({ ...currentUser, name: `${firstName} ${lastName}` });
     }
 
     const data = await response.json();

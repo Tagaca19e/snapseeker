@@ -8,7 +8,7 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import { AppContext } from '../AppContextProvider';
 
 let navigation = [
-  { name: 'Home', href: '/dashboard', current: false },
+  { name: 'Shop', href: '/dashboard', current: false },
   { name: 'Saved', href: '/saved-items', current: false },
 ];
 
@@ -34,7 +34,7 @@ export default function Navbar() {
     return nav;
   });
 
-  const { setSearchResults, setOpenCamera, setIsLoading } =
+  const { setSearchResults, setOpenCamera, setIsLoading, currentUser } =
     useContext(AppContext);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -212,7 +212,7 @@ export default function Navbar() {
                     <Menu.Button className="flex rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
                       <div className="flex h-9 w-9 items-center justify-center rounded-full  bg-primary text-xl text-white">
-                        <a>{user.name.split('')[0]}</a>
+                        <a>{currentUser?.name.split('')[0]}</a>
                       </div>
                     </Menu.Button>
                   </div>
@@ -292,15 +292,15 @@ export default function Navbar() {
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full  bg-primary text-xl text-white">
-                    <a>{user.name.split('')[0]}</a>
+                    <a>{currentUser?.name.split('')[0]}</a>
                   </div>
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">
-                    {user.name}
+                    {currentUser?.name}
                   </div>
                   <div className="text-sm font-medium text-gray-500">
-                    {user.email}
+                    {currentUser?.email}
                   </div>
                 </div>
               </div>

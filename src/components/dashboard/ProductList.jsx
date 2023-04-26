@@ -194,85 +194,96 @@ export default function ProductList({
       <div className="bg-white">
         {!isLoading && (
           <div className="mx-auto max-w-2xl py-10 px-4 sm:px-6 lg:max-w-7xl lg:px-2">
-            <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-              {productList.length &&
-                productList.map((product) => (
-                  <div
-                    key={product.product_id}
-                    className="posit group flex flex-col justify-between"
-                  >
+            {productList.length || router.pathname === '/dashboard' ? (
+              <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                <>
+                  {productList.map((product) => (
                     <div
-                      className="cursor-pointer"
-                      onClick={() =>
-                        onSelectProduct(
-                          product.product_id,
-                          product.link,
-                          product
-                        )
-                      }
+                      key={product.product_id}
+                      className="posit group flex flex-col justify-between"
                     >
-                      <img
-                        src={product.thumbnail}
-                        alt={product.title}
-                        className="mb-3 w-full rounded-md border border-gray-300 object-cover object-center p-3 sm:h-[300px]"
-                      />
+                      <div
+                        className="cursor-pointer"
+                        onClick={() =>
+                          onSelectProduct(
+                            product.product_id,
+                            product.link,
+                            product
+                          )
+                        }
+                      >
+                        <img
+                          src={product.thumbnail}
+                          alt={product.title}
+                          className="mb-3 w-full rounded-md border border-gray-300 object-cover object-center p-3 sm:h-[300px]"
+                        />
 
-                      {/* Product infomrmation */}
-                      <div className="flex flex-col gap-2">
-                        <h3 className="text-sm text-gray-700">
-                          {product.title}
-                        </h3>
+                        {/* Product infomrmation */}
+                        <div className="flex flex-col gap-2">
+                          <h3 className="text-sm text-gray-700">
+                            {product.title}
+                          </h3>
 
-                        <div>
-                          <p className="mb-2 text-sm font-medium">
-                            {product.price}
-                          </p>
-                          <span className="flex">
-                            <BuildingStorefrontIcon className="mr-2 h-5 text-gray-700" />
-                            <p className="text-sm font-bold">
-                              {product.source}
+                          <div>
+                            <p className="mb-2 text-sm font-medium">
+                              {product.price}
                             </p>
-                          </span>
-                        </div>
+                            <span className="flex">
+                              <BuildingStorefrontIcon className="mr-2 h-5 text-gray-700" />
+                              <p className="text-sm font-bold">
+                                {product.source}
+                              </p>
+                            </span>
+                          </div>
 
-                        <p className="mt-1 flex items-center text-sm text-gray-500">
-                          <StarIcon className="h-5 text-black" />
-                          {product.rating}: {product.reviews} Reviews
-                        </p>
-                        {product.id}
+                          <p className="mt-1 flex items-center text-sm text-gray-500">
+                            <StarIcon className="h-5 text-black" />
+                            {product.rating}: {product.reviews} Reviews
+                          </p>
+                          {product.id}
+                        </div>
+                      </div>
+                      <div className="my-1 flex flex-wrap gap-2 py-2 text-center">
+                        <button
+                          className={`border-gray mr-3 rounded border py-0.5 px-4 font-bold ${
+                            savedProductIds.has(product.product_id)
+                              ? 'bg-primary text-white'
+                              : 'text-gray-600'
+                          }`}
+                          onClick={() => saveProduct(product)}
+                        >
+                          {savedProductsPage ? (
+                            <>delete</>
+                          ) : (
+                            <>
+                              {savedProductIds.has(product.product_id)
+                                ? 'saved'
+                                : 'save'}
+                            </>
+                          )}
+                        </button>
+                        {product?.serpapi_product_api_comparisons && (
+                          <button
+                            onClick={() => handleCompare(product?.product_id)}
+                            className="mr-3 rounded bg-[#3bb77e] py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
+                          >
+                            compare prices
+                          </button>
+                        )}
                       </div>
                     </div>
-                    <div className="my-1 flex flex-wrap gap-2 py-2 text-center">
-                      <button
-                        className={`border-gray mr-3 rounded border py-0.5 px-4 font-bold ${
-                          savedProductIds.has(product.product_id)
-                            ? 'bg-primary text-white'
-                            : 'text-gray-600'
-                        }`}
-                        onClick={() => saveProduct(product)}
-                      >
-                        {savedProductsPage ? (
-                          <>delete</>
-                        ) : (
-                          <>
-                            {savedProductIds.has(product.product_id)
-                              ? 'saved'
-                              : 'save'}
-                          </>
-                        )}
-                      </button>
-                      {product?.serpapi_product_api_comparisons && (
-                        <button
-                          onClick={() => handleCompare(product?.product_id)}
-                          className="mr-3 rounded bg-[#3bb77e] py-0.5 px-4 font-bold text-white hover:bg-[#3bb77e]/80 "
-                        >
-                          compare prices
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-            </div>
+                  ))}
+                </>
+              </div>
+            ) : (
+              <div className="flex h-[70vh] flex-col items-center justify-center text-center text-gray-700">
+                <img className="h-[500px] w-[500px]" src="/empty-cart.svg" />
+                <p>
+                  <strong>Your saved items is currently empty</strong>
+                </p>
+                <p>Feel free to go to shop and explore!</p>
+              </div>
+            )}
 
             {router.pathname === '/dashboard' && (
               <Pagination

@@ -1,6 +1,6 @@
 import SerpApi from 'google-search-results-nodejs';
 import { getSession } from 'next-auth/react';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../components/AppContextProvider';
 import CameraUpload from '../components/dashboard/CameraUpload';
 import Layout from '../components/dashboard/Layout';
@@ -9,12 +9,17 @@ import ProductList from '../components/dashboard/ProductList';
 import clientPromise from '/lib/mongodb';
 
 export default function Dashboard({
+  user,
   products,
   isMobileView,
   userSavedItemIds,
 }) {
-  const { setIsLoading } = useContext(AppContext);
+  const { setIsLoading, setCurrentUser } = useContext(AppContext);
   const [currentProducts, setCurrentProducts] = useState(products);
+
+  useEffect(() => {
+    setCurrentUser(user || null);
+  }, []);
 
   /**
    * Changes current product object when user clicks on pagination link.
@@ -88,6 +93,15 @@ export async function getServerSideProps(context) {
     ? true
     : false;
 
+  const userData = await db.collection('users').findOne({
+    email: session.user.email,
+  });
+
+  const user = {
+    name: userData.name,
+    email: userData.email,
+  };
+
   const search = new SerpApi.GoogleSearch(process.env.SERP_API_KEY);
   const productsPromise = new Promise((resolve, reject) => {
     search.json(
@@ -111,7 +125,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      session,
+      user,
       products: products || {},
       isMobileView,
       userSavedItemIds: userSavedItemIds || [],

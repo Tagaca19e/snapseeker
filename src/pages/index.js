@@ -6,7 +6,7 @@ import Vendors from '../components/Vendors';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function Home() {
+export default function Shop() {
   return (
     <>
       <Head>

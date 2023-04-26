@@ -1,13 +1,23 @@
 import { getSession } from 'next-auth/react';
-import { React } from 'react';
+import { useContext, useEffect } from 'react';
+import { AppContext } from '../components/AppContextProvider';
 import CameraUpload from '../components/dashboard/CameraUpload';
 import Layout from '../components/dashboard/Layout';
 import ProductListLoader from '../components/dashboard/loaders/ProductList';
 import ProductList from '../components/dashboard/ProductList';
 import clientPromise from '/lib/mongodb';
 
-export default function SavedItems({ savedItems, savedItemIds, isMobileView }) {
-  console.log(savedItems);
+export default function SavedItems({
+  user,
+  savedItems,
+  savedItemIds,
+  isMobileView,
+}) {
+  const { setCurrentUser } = useContext(AppContext);
+
+  useEffect(() => {
+    setCurrentUser(user || null);
+  }, []);
 
   return (
     <div>
@@ -48,6 +58,15 @@ export async function getServerSideProps(context) {
   // Keep track of item ids to mark items that are currently saved.
   const savedItemIds = savedItems.map((item) => item.product_id);
 
+  const userData = await db.collection('users').findOne({
+    email: session.user.email,
+  });
+
+  const user = {
+    name: userData.name,
+    email: userData.email,
+  };
+
   const userAgent = context.req.headers['user-agent'];
   const isMobileView = userAgent.match(
     /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
@@ -57,7 +76,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      session,
+      user,
       savedItems,
       savedItemIds,
       isMobileView,
